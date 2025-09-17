@@ -40,11 +40,11 @@
         }
         
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             color: var(--text-color);
             padding: 100px 0;
             position: relative;
             overflow: hidden;
+            background: #202129;
         }
         
         .hero-section::before {
@@ -62,7 +62,9 @@
             position: relative;
             z-index: 2;
         }
-        
+        .feature-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
         .feature-card {
             background: var(--card-color);
             border: 1px solid var(--border-color);
@@ -195,7 +197,7 @@
                 </div>
                 <div class="col-lg-6 text-center">
                     <div class="app-preview">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                        <img src="{{ asset('images/main.png') }}" 
                              alt="MyGarage App Preview" 
                              class="img-fluid rounded-3">
                     </div>
@@ -342,8 +344,8 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="text-center">
                         <div class="app-preview mb-3">
-                            <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
-                                 alt="Dashboard" class="img-fluid rounded-3">
+                            <img src="{{ asset('images/screenshots/main.png') }}" 
+                                 alt="Dashboard" class="img-fluid rounded-3" loading="lazy">
                         </div>
                         <h5 class="fw-bold" style="color: var(--text-color);">Главная панель</h5>
                         <p style="color: var(--text-secondary);">Обзор всех ваших автомобилей и важной информации</p>
@@ -353,8 +355,8 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="text-center">
                         <div class="app-preview mb-3">
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
-                                 alt="Expenses" class="img-fluid rounded-3">
+                            <img src="{{ asset('images/screenshots/istor.png') }}" 
+                                 alt="Expenses" class="img-fluid rounded-3" loading="lazy">
                         </div>
                         <h5 class="fw-bold" style="color: var(--text-color);">Учет расходов</h5>
                         <p style="color: var(--text-secondary);">Детальная статистика и анализ ваших трат</p>
@@ -364,11 +366,11 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="text-center">
                         <div class="app-preview mb-3">
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
-                                 alt="Analytics" class="img-fluid rounded-3">
+                            <img src="{{ asset('images/screenshots/sto.png') }}" 
+                                 alt="STO" class="img-fluid rounded-3" loading="lazy">
                         </div>
-                        <h5 class="fw-bold" style="color: var(--text-color);">Аналитика</h5>
-                        <p style="color: var(--text-secondary);">Графики и отчеты для принятия решений</p>
+                        <h5 class="fw-bold" style="color: var(--text-color);">Твои СТО</h5>
+                        <p style="color: var(--text-secondary);">Сохраняй свои любимые СТО</p>
                     </div>
                 </div>
             </div>
@@ -406,7 +408,7 @@
                 </div>
                 <div class="col-lg-6 text-center">
                     <div class="app-preview">
-                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                        <img src="{{ asset('images/image.png') }}" 
                              alt="MyGarage Mobile App" 
                              class="img-fluid rounded-3">
                     </div>
@@ -431,41 +433,6 @@
                         <a href="#" style="color: var(--text-secondary);"><i class="bi bi-instagram fs-4"></i></a>
                         <a href="#" style="color: var(--text-secondary);"><i class="bi bi-linkedin fs-4"></i></a>
                     </div>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3" style="color: var(--text-color);">Приложение</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Функции</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Цены</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Скачать</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Обновления</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3" style="color: var(--text-color);">Поддержка</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Помощь</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">FAQ</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Контакты</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Сообщество</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3" style="color: var(--text-color);">Компания</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">О нас</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Карьера</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Пресса</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Блог</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3" style="color: var(--text-color);">Правовая информация</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Условия использования</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Политика конфиденциальности</a></li>
-                        <li><a href="#" style="color: var(--text-secondary);" class="text-decoration-none">Cookies</a></li>
-                    </ul>
                 </div>
             </div>
             <hr class="my-4" style="border-color: var(--border-color);">
