@@ -12,17 +12,30 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ensure new columns exist before updating
+        Schema::table('manual_sections', function (Blueprint $table) {
+            if (!Schema::hasColumn('manual_sections', 'key')) {
+                $table->string('key')->nullable();
+            }
+            if (!Schema::hasColumn('manual_sections', 'icon')) {
+                $table->string('icon')->nullable();
+            }
+            if (!Schema::hasColumn('manual_sections', 'is_active')) {
+                $table->boolean('is_active')->default(true);
+            }
+        });
+
         // Update existing records with default values
         DB::table('manual_sections')->update([
             'key' => DB::raw('id'),
             'icon' => 'settings',
             'is_active' => true,
         ]);
-        
+
         // Make key unique and not null
         Schema::table('manual_sections', function (Blueprint $table) {
-            $table->string('key')->unique()->change();
-            $table->string('icon')->change();
+            $table->string('key')->unique()->nullable(false)->change();
+            $table->string('icon')->nullable(false)->change();
         });
     }
 

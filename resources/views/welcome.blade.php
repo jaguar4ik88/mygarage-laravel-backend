@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MyGarage - Управление автомобилем стало проще</title>
-    <meta name="description" content="MyGarage - современное приложение для управления автомобилем. Отслеживайте расходы, напоминания о ТО, историю сервиса и многое другое.">
+    <title>MyGarage - Керування автомобілем стало простішим</title>
+    <meta name="description" content="MyGarage - сучасний застосунок для керування автомобілем. Відстежуйте витрати, нагадування про ТО, історію сервісу та багато іншого.">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -168,20 +168,20 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
                     <h1 class="display-4 fw-bold mb-4">
-                        Управление автомобилем стало <span class="text-warning">проще</span>
+                        Керування автомобілем стало <span class="text-warning">простішим</span>
                     </h1>
                     <p class="lead mb-4">
-                        MyGarage - это современное приложение для полного контроля над вашим автомобилем. 
-                        Отслеживайте расходы, получайте напоминания о ТО, ведите историю сервиса и многое другое.
+                        MyGarage — це сучасний застосунок для повного контролю над вашим автомобілем. 
+                        Відстежуйте витрати, отримуйте нагадування про ТО, ведіть історію сервісу тощо.
                     </p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
                         <a href="#download" class="btn btn-warning btn-lg btn-download">
                             <i class="bi bi-download"></i>
-                            Скачать приложение
+                            Завантажити застосунок
                         </a>
                         <a href="#features" class="btn btn-outline-light btn-lg">
                             <i class="bi bi-play-circle"></i>
-                            Узнать больше
+                            Дізнатися більше
                         </a>
                     </div>
                     <div class="d-flex align-items-center gap-4 text-sm">
@@ -191,7 +191,7 @@
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-people-fill"></i>
-                            <span>10,000+ пользователей</span>
+                            <span>10,000+ користувачів</span>
                         </div>
                     </div>
                 </div>
@@ -210,9 +210,9 @@
     <section id="features" class="py-5">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="section-title">Почему выбирают MyGarage?</h2>
+                <h2 class="section-title">Чому обирають MyGarage?</h2>
                 <p class="section-subtitle">
-                    Все необходимые инструменты для управления автомобилем в одном приложении
+                    Усі необхідні інструменти для керування автомобілем в одному застосунку
                 </p>
             </div>
             
@@ -222,10 +222,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--success-color), #6ed6f8);">
                             <i class="bi bi-calculator"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Учет расходов</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Облік витрат</h4>
                         <p style="color: var(--text-secondary);">
-                            Ведите детальный учет всех расходов на автомобиль: топливо, ремонт, 
-                            страховка, налоги. Получайте аналитику и статистику по тратам.
+                            Ведіть детальний облік усіх витрат на авто: пальне, ремонт, 
+                            страхування, податки. Отримуйте аналітику та статистику витрат.
                         </p>
                     </div>
                 </div>
@@ -235,10 +235,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent-color), var(--primary-color));">
                             <i class="bi bi-bell"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Умные напоминания</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Розумні нагадування</h4>
                         <p style="color: var(--text-secondary);">
-                            Настройте напоминания о ТО, замене масла, техосмотре и других важных 
-                            процедурах. Никогда не пропустите важное обслуживание.
+                            Налаштуйте нагадування про ТО, заміну масла, техогляд та інші важливі 
+                            процедури. Ніколи не пропускайте важливе обслуговування.
                         </p>
                     </div>
                 </div>
@@ -248,10 +248,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--warning-color), var(--accent-color));">
                             <i class="bi bi-gear"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">История сервиса</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Історія сервісу</h4>
                         <p style="color: var(--text-secondary);">
-                            Ведите полную историю всех работ и ремонтов. Сохраняйте чеки, 
-                            фотографии и заметки о проведенных работах.
+                            Ведіть повну історію всіх робіт і ремонтів. Зберігайте чеки, 
+                            фото та нотатки про виконані роботи.
                         </p>
                     </div>
                 </div>
@@ -261,10 +261,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--info-color), var(--accent-color));">
                             <i class="bi bi-car-front"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Управление автопарком</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Керування автопарком</h4>
                         <p style="color: var(--text-secondary);">
-                            Добавляйте несколько автомобилей, отслеживайте пробег, 
-                            ведите отдельную статистику для каждого авто.
+                            Додавайте кілька автомобілів, відстежуйте пробіг, 
+                            ведіть окрему статистику для кожного авто.
                         </p>
                     </div>
                 </div>
@@ -274,10 +274,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--danger-color), var(--primary-color));">
                             <i class="bi bi-geo-alt"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Поиск СТО</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Пошук СТО</h4>
                         <p style="color: var(--text-secondary);">
-                            Найдите ближайшие станции техобслуживания, сохраняйте 
-                            избранные СТО, читайте отзывы и рейтинги.
+                            Знаходьте найближчі станції техобслуговування, зберігайте 
+                            обрані СТО, читайте відгуки та рейтинги.
                         </p>
                     </div>
                 </div>
@@ -287,10 +287,10 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, var(--success-color), var(--info-color));">
                             <i class="bi bi-graph-up"></i>
                         </div>
-                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Аналитика и отчеты</h4>
+                        <h4 class="fw-bold mb-3" style="color: var(--text-color);">Аналітика та звіти</h4>
                         <p style="color: var(--text-secondary);">
-                            Получайте детальные отчеты о расходах, графики потребления топлива, 
-                            прогнозы на будущие траты и рекомендации по экономии.
+                            Отримуйте детальні звіти про витрати, графіки споживання пального, 
+                            прогнози майбутніх витрат та рекомендації щодо економії.
                         </p>
                     </div>
                 </div>
@@ -305,25 +305,25 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stat-item">
                         <span class="stat-number">10,000+</span>
-                        <p style="color: var(--text-secondary);">Активных пользователей</p>
+                        <p style="color: var(--text-secondary);">Активних користувачів</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="stat-item">
                         <span class="stat-number">50,000+</span>
-                        <p style="color: var(--text-secondary);">Записей о расходах</p>
+                        <p style="color: var(--text-secondary);">Записів про витрати</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="stat-item">
                         <span class="stat-number">15,000+</span>
-                        <p style="color: var(--text-secondary);">Напоминаний создано</p>
+                        <p style="color: var(--text-secondary);">Створено нагадувань</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="stat-item">
                         <span class="stat-number">4.8/5</span>
-                        <p style="color: var(--text-secondary);">Средний рейтинг</p>
+                        <p style="color: var(--text-secondary);">Середній рейтинг</p>
                     </div>
                 </div>
             </div>
@@ -334,9 +334,9 @@
     <section class="py-5">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="section-title">Посмотрите, как это работает</h2>
+                <h2 class="section-title">Подивіться, як це працює</h2>
                 <p class="section-subtitle">
-                    Интуитивный интерфейс и все необходимые функции в одном месте
+                    Інтуїтивний інтерфейс і всі необхідні функції в одному місці
                 </p>
             </div>
             
@@ -347,8 +347,8 @@
                             <img src="{{ asset('images/screenshots/main.png') }}" 
                                  alt="Dashboard" class="img-fluid rounded-3" loading="lazy">
                         </div>
-                        <h5 class="fw-bold" style="color: var(--text-color);">Главная панель</h5>
-                        <p style="color: var(--text-secondary);">Обзор всех ваших автомобилей и важной информации</p>
+                        <h5 class="fw-bold" style="color: var(--text-color);">Головна панель</h5>
+                        <p style="color: var(--text-secondary);">Огляд усіх ваших автомобілів і важливої інформації</p>
                     </div>
                 </div>
                 
@@ -358,8 +358,8 @@
                             <img src="{{ asset('images/screenshots/istor.png') }}" 
                                  alt="Expenses" class="img-fluid rounded-3" loading="lazy">
                         </div>
-                        <h5 class="fw-bold" style="color: var(--text-color);">Учет расходов</h5>
-                        <p style="color: var(--text-secondary);">Детальная статистика и анализ ваших трат</p>
+                        <h5 class="fw-bold" style="color: var(--text-color);">Облік витрат</h5>
+                        <p style="color: var(--text-secondary);">Детальна статистика та аналіз ваших витрат</p>
                     </div>
                 </div>
                 
@@ -369,8 +369,8 @@
                             <img src="{{ asset('images/screenshots/sto.png') }}" 
                                  alt="STO" class="img-fluid rounded-3" loading="lazy">
                         </div>
-                        <h5 class="fw-bold" style="color: var(--text-color);">Твои СТО</h5>
-                        <p style="color: var(--text-secondary);">Сохраняй свои любимые СТО</p>
+                        <h5 class="fw-bold" style="color: var(--text-color);">Твої СТО</h5>
+                        <p style="color: var(--text-secondary);">Зберігай улюблені СТО</p>
                     </div>
                 </div>
             </div>
@@ -383,11 +383,11 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h2 class="display-5 fw-bold mb-4">
-                        Готовы начать управлять автомобилем по-новому?
+                        Готові почати керувати автомобілем по-новому?
                     </h2>
                     <p class="lead mb-4">
-                        Скачайте MyGarage прямо сейчас и получите полный контроль над 
-                        расходами и обслуживанием вашего автомобиля.
+                        Завантажте MyGarage просто зараз і отримайте повний контроль над 
+                        витратами та обслуговуванням вашого автомобіля.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="#" class="btn btn-light btn-lg btn-download btn-app-store">
@@ -424,8 +424,8 @@
                 <div class="col-lg-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: var(--accent-color);">MyGarage</h5>
                     <p style="color: var(--text-secondary);">
-                        Современное приложение для управления автомобилем. 
-                        Сделайте уход за автомобилем простым и эффективным.
+                        Сучасний застосунок для керування автомобілем. 
+                        Зробіть догляд за авто простим і ефективним.
                     </p>
                     <div class="d-flex gap-3">
                         <a href="#" style="color: var(--text-secondary);"><i class="bi bi-facebook fs-4"></i></a>
@@ -438,10 +438,10 @@
             <hr class="my-4" style="border-color: var(--border-color);">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p style="color: var(--text-secondary);" class="mb-0">&copy; 2024 MyGarage. Все права защищены.</p>
+                    <p style="color: var(--text-secondary);" class="mb-0">&copy; 2024 MyGarage. Усі права захищені.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p style="color: var(--text-secondary);" class="mb-0">Сделано с ❤️ для автолюбителей</p>
+                    <p style="color: var(--text-secondary);" class="mb-0">Зроблено з ❤️ для автолюбителів</p>
                 </div>
             </div>
         </div>
