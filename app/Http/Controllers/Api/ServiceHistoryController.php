@@ -25,11 +25,9 @@ class ServiceHistoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'vehicle_id' => 'required|exists:vehicles,id',
-            'type' => 'required|string|max:255',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'expense_type_id' => 'required|exists:expense_types,id',
+            'description' => 'required|string',
             'cost' => 'required|numeric|min:0',
-            'mileage' => 'required|integer|min:0',
             'service_date' => 'required|date',
             'station_name' => 'nullable|string|max:255',
         ]);
@@ -73,11 +71,9 @@ class ServiceHistoryController extends Controller
         })->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'type' => 'sometimes|required|string|max:255',
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
+            'expense_type_id' => 'sometimes|required|exists:expense_types,id',
+            'description' => 'sometimes|required|string',
             'cost' => 'sometimes|required|numeric|min:0',
-            'mileage' => 'sometimes|required|integer|min:0',
             'service_date' => 'sometimes|required|date',
             'station_name' => 'nullable|string|max:255',
         ]);

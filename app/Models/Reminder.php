@@ -15,18 +15,12 @@ class Reminder extends Model
         'type',
         'title',
         'description',
-        'last_service_date',
-        'last_service_mileage',
-        'next_service_mileage',
         'next_service_date',
         'is_active',
     ];
 
     protected $casts = [
-        'last_service_date' => 'datetime',
         'next_service_date' => 'datetime',
-        'last_service_mileage' => 'integer',
-        'next_service_mileage' => 'integer',
         'is_active' => 'boolean',
     ];
 

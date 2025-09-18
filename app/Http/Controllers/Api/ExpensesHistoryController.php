@@ -26,10 +26,8 @@ class ExpensesHistoryController extends Controller
                 ->with(['vehicle', 'expenseType.translationGroup.translations'])
                 ->orderBy('service_date', 'desc');
 
-            // Optional filter by type (legacy) or expense_type_id
-            if ($request->filled('type')) {
-                $query->where('type', $request->query('type'));
-            } elseif ($request->filled('expense_type_id')) {
+            // Filter by expense_type_id
+            if ($request->filled('expense_type_id')) {
                 $query->where('expense_type_id', $request->query('expense_type_id'));
             }
 
@@ -40,6 +38,7 @@ class ExpensesHistoryController extends Controller
             $expensesHistory = $query->paginate($perPage, ['*'], 'page', $page);
 
             // Add legacy type field for backward compatibility
+            // Add type field for backward compatibility
             $expensesHistory->each(function ($expense) {
                 if ($expense->expenseType) {
                     $expense->type = $expense->expenseType->slug;
@@ -102,9 +101,9 @@ class ExpensesHistoryController extends Controller
                 'station_name' => 'nullable|string|max:255',
             ]);
 
-            // Ensure either type or expense_type_id is provided
-            if (!$request->has('type') && !$request->has('expense_type_id')) {
-                $validator->errors()->add('type', 'Either type or expense_type_id is required');
+            // Ensure expense_type_id is provided
+            if (!$request->has('expense_type_id')) {
+                $validator->errors()->add('expense_type_id', 'expense_type_id is required');
             }
 
             if ($validator->fails()) {
@@ -129,16 +128,8 @@ class ExpensesHistoryController extends Controller
             $expenseData = $request->all();
             $expenseData['user_id'] = $userId;
 
-            // Handle legacy type mapping to expense_type_id
-            if ($request->has('type') && !$request->has('expense_type_id')) {
-                $expenseType = \App\Models\ExpenseType::where('slug', $request->type)->first();
-                if ($expenseType) {
-                    $expenseData['expense_type_id'] = $expenseType->id;
-                }
-            }
-
-            // Set type field based on expense_type_id if not provided
-            if (!$request->has('type') && $request->has('expense_type_id')) {
+            // Set type field based on expense_type_id for backward compatibility
+            if ($request->has('expense_type_id')) {
                 $expenseType = \App\Models\ExpenseType::find($request->expense_type_id);
                 if ($expenseType) {
                     $expenseData['type'] = $expenseType->slug;
@@ -200,11 +191,11 @@ class ExpensesHistoryController extends Controller
                 'station_name' => 'nullable|string|max:255',
             ]);
 
-            // Handle legacy type mapping to expense_type_id
-            if ($request->has('type') && !$request->has('expense_type_id')) {
-                $expenseType = \App\Models\ExpenseType::where('slug', $request->type)->first();
+            // Set type field based on expense_type_id for backward compatibility
+            if ($request->has('expense_type_id')) {
+                $expenseType = \App\Models\ExpenseType::find($request->expense_type_id);
                 if ($expenseType) {
-                    $request->merge(['expense_type_id' => $expenseType->id]);
+                    $request->merge(['type' => $expenseType->slug]);
                 }
             }
 
@@ -304,8 +295,9 @@ class ExpensesHistoryController extends Controller
 
             // Get expenses by type
             $expensesByType = ExpensesHistory::where('user_id', $userId)
-                ->selectRaw('type, SUM(cost) as total_cost, COUNT(*) as count')
-                ->groupBy('type')
+                ->join('expense_types', 'expenses_history.expense_type_id', '=', 'expense_types.id')
+                ->selectRaw('expense_types.slug as type, SUM(expenses_history.cost) as total_cost, COUNT(*) as count')
+                ->groupBy('expense_types.slug')
                 ->get();
 
             // Get monthly expenses for the last 12 months (DB-agnostic aggregation)
@@ -396,15 +388,14 @@ class ExpensesHistoryController extends Controller
                 ->with(['vehicle', 'expenseType.translationGroup.translations'])
                 ->orderBy('service_date', 'desc');
 
-            if ($request->filled('type')) {
-                $query->where('type', $request->query('type'));
-            } elseif ($request->filled('expense_type_id')) {
+            if ($request->filled('expense_type_id')) {
                 $query->where('expense_type_id', $request->query('expense_type_id'));
             }
 
             $expensesHistory = $query->get();
 
             // Add legacy type field for backward compatibility
+            // Add type field for backward compatibility
             $expensesHistory->each(function ($expense) {
                 if ($expense->expenseType) {
                     $expense->type = $expense->expenseType->slug;
