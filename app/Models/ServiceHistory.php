@@ -10,15 +10,13 @@ class ServiceHistory extends Model
 {
     use HasFactory;
 
-    protected $table = 'service_history';
+    protected $table = 'expenses_history';
 
     protected $fillable = [
         'vehicle_id',
-        'type',
-        'title',
+        'expense_type_id',
         'description',
         'cost',
-        'mileage',
         'service_date',
         'station_name',
     ];
@@ -26,7 +24,6 @@ class ServiceHistory extends Model
     protected $casts = [
         'service_date' => 'datetime',
         'cost' => 'decimal:2',
-        'mileage' => 'integer',
     ];
 
     public function vehicle(): BelongsTo

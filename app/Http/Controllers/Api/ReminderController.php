@@ -41,10 +41,7 @@ class ReminderController extends Controller
             'type' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'last_service_date' => 'nullable|date',
-            'last_service_mileage' => 'nullable|integer|min:0',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'next_service_date' => 'nullable|date',
+            'next_service_date' => 'required|date',
             'is_active' => 'boolean',
         ]);
 
@@ -99,10 +96,7 @@ class ReminderController extends Controller
             'type' => 'sometimes|required|string|max:255',
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'last_service_date' => 'nullable|date',
-            'last_service_mileage' => 'nullable|integer|min:0',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'next_service_date' => 'nullable|date',
+            'next_service_date' => 'sometimes|required|date',
             'is_active' => 'boolean',
         ]);
 
