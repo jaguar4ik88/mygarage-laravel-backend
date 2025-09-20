@@ -15,12 +15,9 @@ class ExpensesHistory extends Model
     protected $fillable = [
         'user_id',
         'vehicle_id',
-        'type',
         'expense_type_id',
-        'title',
         'description',
         'cost',
-        'mileage',
         'service_date',
         'station_name',
     ];
@@ -28,7 +25,6 @@ class ExpensesHistory extends Model
     protected $casts = [
         'service_date' => 'datetime',
         'cost' => 'decimal:2',
-        'mileage' => 'integer',
     ];
 
     public function user(): BelongsTo
