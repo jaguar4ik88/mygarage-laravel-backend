@@ -37,13 +37,6 @@ class ExpensesHistoryController extends Controller
             
             $expensesHistory = $query->paginate($perPage, ['*'], 'page', $page);
 
-            // Add legacy type field for backward compatibility
-            // Add type field for backward compatibility
-            $expensesHistory->each(function ($expense) {
-                if ($expense->expenseType) {
-                    $expense->type = $expense->expenseType->slug;
-                }
-            });
 
             Log::info('API Response: GET /history/' . $userId, [
                 'user_id' => $userId,
@@ -91,20 +84,13 @@ class ExpensesHistoryController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'vehicle_id' => 'required|exists:vehicles,id',
-                'type' => 'sometimes|string|in:maintenance,repair,inspection,fuel',
-                'expense_type_id' => 'sometimes|exists:expense_types,id',
-                'title' => 'required|string|max:255',
+                'expense_type_id' => 'required|exists:expense_types,id',
                 'description' => 'nullable|string',
                 'cost' => 'required|numeric|min:0',
-                'mileage' => 'required|integer|min:0',
                 'service_date' => 'required|date',
                 'station_name' => 'nullable|string|max:255',
             ]);
 
-            // Ensure expense_type_id is provided
-            if (!$request->has('expense_type_id')) {
-                $validator->errors()->add('expense_type_id', 'expense_type_id is required');
-            }
 
             if ($validator->fails()) {
                 Log::warning('API Validation Error: POST /history/' . $userId . '/add', [
@@ -127,18 +113,6 @@ class ExpensesHistoryController extends Controller
 
             $expenseData = $request->all();
             $expenseData['user_id'] = $userId;
-
-            // Set type field based on expense_type_id for backward compatibility
-            if ($request->has('expense_type_id')) {
-                $expenseType = \App\Models\ExpenseType::find($request->expense_type_id);
-                if ($expenseType) {
-                    $expenseData['type'] = $expenseType->slug;
-                } else {
-                    $expenseData['type'] = 'other'; // fallback
-                }
-            } elseif (!$request->has('type')) {
-                $expenseData['type'] = 'other'; // fallback
-            }
 
             $expensesHistory = ExpensesHistory::create($expenseData);
 
@@ -181,23 +155,13 @@ class ExpensesHistoryController extends Controller
             $expensesHistory = ExpensesHistory::where('user_id', $userId)->findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'type' => 'sometimes|string|in:maintenance,repair,inspection,fuel',
                 'expense_type_id' => 'sometimes|exists:expense_types,id',
-                'title' => 'sometimes|required|string|max:255',
                 'description' => 'nullable|string',
                 'cost' => 'sometimes|required|numeric|min:0',
-                'mileage' => 'sometimes|required|integer|min:0',
                 'service_date' => 'sometimes|required|date',
                 'station_name' => 'nullable|string|max:255',
             ]);
 
-            // Set type field based on expense_type_id for backward compatibility
-            if ($request->has('expense_type_id')) {
-                $expenseType = \App\Models\ExpenseType::find($request->expense_type_id);
-                if ($expenseType) {
-                    $request->merge(['type' => $expenseType->slug]);
-                }
-            }
 
             if ($validator->fails()) {
                 Log::warning('API Validation Error: PUT /history/' . $userId . '/update/' . $id, [
@@ -394,13 +358,6 @@ class ExpensesHistoryController extends Controller
 
             $expensesHistory = $query->get();
 
-            // Add legacy type field for backward compatibility
-            // Add type field for backward compatibility
-            $expensesHistory->each(function ($expense) {
-                if ($expense->expenseType) {
-                    $expense->type = $expense->expenseType->slug;
-                }
-            });
 
             Log::info('API Response: GET /vehicles/' . $vehicleId . '/history', [
                 'vehicle_id' => $vehicleId,
