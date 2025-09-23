@@ -10,7 +10,7 @@ class ManualSectionController extends Controller
 {
     public function index(Request $request)
     {
-        $locale = $request->get('locale', 'ru');
+        $locale = $request->get('locale', 'uk');
         
         $manualSections = ManualSection::where('is_active', true)
             ->with(['translations' => function($query) use ($locale) {

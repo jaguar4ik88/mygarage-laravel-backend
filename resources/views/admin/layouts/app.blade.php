@@ -108,6 +108,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.privacy-policy.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.privacy-policy.index') }}">
+                                <i class="bi bi-shield-check"></i> Политика конфиденциальности
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.data.statistics') ? 'active' : '' }}" 
                                href="{{ route('admin.data.statistics') }}">
                                 <i class="bi bi-graph-up"></i> Статистика
