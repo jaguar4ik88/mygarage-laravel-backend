@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminDefaultManualController;
 use App\Http\Controllers\Admin\AdminAdviceSectionController;
 use App\Http\Controllers\Admin\AdminAdviceItemController;
 use App\Http\Controllers\Admin\ExpenseTypeController;
+use App\Http\Controllers\Admin\PrivacyPolicyController;
 
 // Главная страница
 Route::get('/', function () {
@@ -40,6 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('manual-sections', AdminManualSectionController::class);
         Route::resource('default-manuals', AdminDefaultManualController::class);
         Route::resource('expense-types', ExpenseTypeController::class);
+        Route::resource('privacy-policy', PrivacyPolicyController::class);
         
         // Управление советами
         Route::resource('advice-sections', AdminAdviceSectionController::class);

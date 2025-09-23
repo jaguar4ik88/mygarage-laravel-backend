@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ManualController;
 use App\Http\Controllers\Api\AdviceController;
 use App\Http\Controllers\Api\CarDataController;
 use App\Http\Controllers\Api\ExpenseTypeController;
+use App\Http\Controllers\Api\PrivacyPolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,4 +97,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history/{userId}/static', [ExpensesHistoryController::class, 'statistics']);
     Route::get('/vehicles/{vehicleId}/history', [ExpensesHistoryController::class, 'byVehicle']);
     
+});
+
+// Public privacy policy routes
+Route::get('/privacy-policy/{language}', [PrivacyPolicyController::class, 'show']);
+
+// Admin privacy policy routes (protected)
+Route::middleware('api.key')->group(function () {
+    Route::get('/admin/privacy-policy', [PrivacyPolicyController::class, 'index']);
+    Route::post('/admin/privacy-policy', [PrivacyPolicyController::class, 'store']);
+    Route::put('/admin/privacy-policy/{privacyPolicy}', [PrivacyPolicyController::class, 'update']);
+    Route::delete('/admin/privacy-policy/{privacyPolicy}', [PrivacyPolicyController::class, 'destroy']);
 });
