@@ -25,7 +25,6 @@
 
         @foreach($policies as $policy)
             <div class="section">
-                <div><code>{{ $policy->section }}</code></div>
                 <h2>{{ $policy->title }}</h2>
                 <pre>{{ $policy->content }}</pre>
             </div>
