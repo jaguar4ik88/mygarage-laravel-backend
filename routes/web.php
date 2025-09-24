@@ -14,11 +14,17 @@ use App\Http\Controllers\Admin\AdminAdviceSectionController;
 use App\Http\Controllers\Admin\AdminAdviceItemController;
 use App\Http\Controllers\Admin\ExpenseTypeController;
 use App\Http\Controllers\Admin\PrivacyPolicyController;
+use App\Http\Controllers\PrivacyPolicyPublicController;
 
 // Главная страница
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Публичная страница политики конфиденциальности
+Route::get('/privacy-policy/{locale}', [PrivacyPolicyPublicController::class, 'show'])
+    ->where('locale', '[a-zA-Z_-]+')
+    ->name('privacy-policy.show');
 
 // Админка - аутентификация
 Route::prefix('admin')->name('admin.')->group(function () {
