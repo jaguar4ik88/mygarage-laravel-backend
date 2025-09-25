@@ -34,7 +34,7 @@ class VehicleController extends Controller
             'make' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'engine_type' => 'required|string|max:255',
+            'engine_type' => 'nullable|string|max:255',
             'mileage' => 'required|integer|min:0',
             'vin' => 'nullable|string|max:17', // Убрали unique для тестирования
         ]);
@@ -79,7 +79,7 @@ class VehicleController extends Controller
             'make' => 'sometimes|required|string|max:255',
             'model' => 'sometimes|required|string|max:255',
             'year' => 'sometimes|required|integer|min:1900|max:' . (date('Y') + 1),
-            'engine_type' => 'sometimes|required|string|max:255',
+            'engine_type' => 'nullable|string|max:255',
             'mileage' => 'sometimes|required|integer|min:0',
             'vin' => 'nullable|string|max:17', // Убрали unique для тестирования
         ]);
