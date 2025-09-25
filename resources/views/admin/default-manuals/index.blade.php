@@ -80,7 +80,7 @@
 
         @if($manuals->hasPages())
           <div class="d-flex justify-content-center mt-4">
-            {{ $manuals->withQueryString()->links() }}
+            {{ $manuals->withQueryString()->links('vendor.pagination.default') }}
           </div>
         @endif
       </div>
