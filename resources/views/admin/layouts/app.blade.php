@@ -34,6 +34,71 @@
         .navbar-brand {
             font-weight: bold;
         }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        /* Custom pagination styles */
+        .pagination .page-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: #6c757d;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .pagination .page-link:hover {
+            z-index: 2;
+            color: #495057;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-link:focus {
+            z-index: 3;
+            color: #495057;
+            background-color: #e9ecef;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .pagination .page-item:first-child .page-link {
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .pagination .page-item:last-child .page-link {
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+        
+        .pagination .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-link svg {
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +182,12 @@
                             <a class="nav-link {{ request()->routeIs('admin.data.statistics') ? 'active' : '' }}" 
                                href="{{ route('admin.data.statistics') }}">
                                 <i class="bi bi-graph-up"></i> Статистика
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.car-data.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.car-data.index') }}">
+                                <i class="bi bi-gear-wide-connected"></i> Справочники авто
                             </a>
                         </li>
                     </ul>

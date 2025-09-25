@@ -118,7 +118,7 @@
                 <!-- Пагинация -->
                 @if($users->hasPages())
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $users->appends(request()->query())->links() }}
+                        {{ $users->appends(request()->query())->links('vendor.pagination.default') }}
                     </div>
                 @endif
             </div>

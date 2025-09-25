@@ -139,7 +139,7 @@
                 <!-- Пагинация -->
                 @if($questions->hasPages())
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $questions->appends(request()->query())->links() }}
+                        {{ $questions->appends(request()->query())->links("vendor.pagination.default") }}
                     </div>
                 @endif
             </div>
