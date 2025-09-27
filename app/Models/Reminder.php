@@ -30,11 +30,9 @@ class Reminder extends Model
 
         // При создании напоминания проверяем дату
         static::creating(function ($reminder) {
-            // Если дата в прошлом или сегодня, оставляем активным для немедленного показа
-            if ($reminder->next_service_date && $reminder->next_service_date->isPast()) {
-                // Оставляем активным, чтобы уведомление показалось немедленно
-                $reminder->is_active = true;
-            }
+            // Все напоминания создаются активными по умолчанию
+            // Логика деактивации просроченных напоминаний в scopeActive()
+            $reminder->is_active = true;
         });
     }
 
