@@ -24,6 +24,19 @@ class Reminder extends Model
         'is_active' => 'boolean',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // При создании напоминания проверяем дату
+        static::creating(function ($reminder) {
+            if ($reminder->next_service_date && $reminder->next_service_date->isPast()) {
+                // Если дата в прошлом, делаем напоминание неактивным
+                $reminder->is_active = false;
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -43,9 +56,15 @@ class Reminder extends Model
 
     /**
      * Scope для получения только активных напоминаний
+     * Автоматически деактивирует просроченные напоминания
      */
     public function scopeActive($query)
     {
+        // Сначала деактивируем просроченные напоминания
+        static::where('is_active', true)
+            ->where('next_service_date', '<', now())
+            ->update(['is_active' => false]);
+            
         return $query->where('is_active', true);
     }
 

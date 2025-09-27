@@ -13,8 +13,13 @@ class ReminderController extends Controller
 {
     public function index(Request $request)
     {
+        // Сначала деактивируем просроченные напоминания для текущего пользователя
+        Reminder::where('user_id', $request->user()->id)
+            ->where('is_active', true)
+            ->where('next_service_date', '<', now())
+            ->update(['is_active' => false]);
+
         // Получаем напоминания только текущего пользователя
-        // НЕ деактивируем автоматически - это будет делать cron или мобильное приложение
         $reminders = Reminder::where('user_id', $request->user()->id)
             ->with('user')
             ->orderBy('is_active', 'desc') // Сначала активные (ожидание), потом неактивные (отработано)
@@ -127,9 +132,15 @@ class ReminderController extends Controller
 
     public function byUser(Request $request, $userId)
     {
+        // Сначала деактивируем просроченные напоминания для указанного пользователя
+        Reminder::where('user_id', $userId)
+            ->where('is_active', true)
+            ->where('next_service_date', '<', now())
+            ->update(['is_active' => false]);
+
         // For testing purposes, return all reminders regardless of user/vehicle
-        // НЕ деактивируем автоматически - это будет делать cron или мобильное приложение
-        $reminders = Reminder::with('user')
+        $reminders = Reminder::where('user_id', $userId)
+            ->with('user')
             ->orderBy('is_active', 'desc') // Сначала активные (ожидание), потом неактивные (отработано)
             ->orderBy('next_service_date', 'asc') // Внутри каждой группы по дате
             ->get();
