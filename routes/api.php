@@ -31,6 +31,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/google', [AuthController::class, 'googleAuth']);
 
 // Public API routes (only for testing/development)
 // NOTE: Remove public access to user/profile before release
