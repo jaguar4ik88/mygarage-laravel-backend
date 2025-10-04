@@ -13,7 +13,7 @@ class ReminderController extends Controller
 {
     public function index(Request $request)
     {
-        // Обновляем статус активности для напоминаний текущего пользователя
+        // Сначала деактивируем просроченные напоминания для текущего пользователя
         Reminder::where('user_id', $request->user()->id)
             ->where('is_active', true)
             ->where('next_service_date', '<', now())
@@ -41,10 +41,7 @@ class ReminderController extends Controller
             'type' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'last_service_date' => 'nullable|date',
-            'last_service_mileage' => 'nullable|integer|min:0',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'next_service_date' => 'nullable|date',
+            'next_service_date' => 'required|date',
             'is_active' => 'boolean',
         ]);
 
@@ -99,10 +96,7 @@ class ReminderController extends Controller
             'type' => 'sometimes|required|string|max:255',
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'last_service_date' => 'nullable|date',
-            'last_service_mileage' => 'nullable|integer|min:0',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'next_service_date' => 'nullable|date',
+            'next_service_date' => 'sometimes|required|date',
             'is_active' => 'boolean',
         ]);
 
@@ -138,13 +132,15 @@ class ReminderController extends Controller
 
     public function byUser(Request $request, $userId)
     {
-        // Обновляем статус активности для всех напоминаний
-        Reminder::where('is_active', true)
+        // Сначала деактивируем просроченные напоминания для указанного пользователя
+        Reminder::where('user_id', $userId)
+            ->where('is_active', true)
             ->where('next_service_date', '<', now())
             ->update(['is_active' => false]);
 
         // For testing purposes, return all reminders regardless of user/vehicle
-        $reminders = Reminder::with('user')
+        $reminders = Reminder::where('user_id', $userId)
+            ->with('user')
             ->orderBy('is_active', 'desc') // Сначала активные (ожидание), потом неактивные (отработано)
             ->orderBy('next_service_date', 'asc') // Внутри каждой группы по дате
             ->get();

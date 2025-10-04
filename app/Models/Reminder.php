@@ -15,20 +15,26 @@ class Reminder extends Model
         'type',
         'title',
         'description',
-        'last_service_date',
-        'last_service_mileage',
-        'next_service_mileage',
         'next_service_date',
         'is_active',
     ];
 
     protected $casts = [
-        'last_service_date' => 'datetime',
         'next_service_date' => 'datetime',
-        'last_service_mileage' => 'integer',
-        'next_service_mileage' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // При создании напоминания проверяем дату
+        static::creating(function ($reminder) {
+            // Все напоминания создаются активными по умолчанию
+            // Логика деактивации просроченных напоминаний в scopeActive()
+            $reminder->is_active = true;
+        });
+    }
 
     public function user(): BelongsTo
     {
@@ -49,9 +55,15 @@ class Reminder extends Model
 
     /**
      * Scope для получения только активных напоминаний
+     * Автоматически деактивирует просроченные напоминания
      */
     public function scopeActive($query)
     {
+        // Сначала деактивируем просроченные напоминания
+        static::where('is_active', true)
+            ->where('next_service_date', '<', now())
+            ->update(['is_active' => false]);
+            
         return $query->where('is_active', true);
     }
 

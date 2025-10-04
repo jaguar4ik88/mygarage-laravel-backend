@@ -130,7 +130,7 @@
                 <!-- Пагинация -->
                 @if($reminderTypes->hasPages())
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $reminderTypes->appends(request()->query())->links() }}
+                        {{ $reminderTypes->appends(request()->query())->links('vendor.pagination.default') }}
                     </div>
                 @endif
             </div>

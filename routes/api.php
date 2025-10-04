@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ManualController;
 use App\Http\Controllers\Api\AdviceController;
 use App\Http\Controllers\Api\CarDataController;
 use App\Http\Controllers\Api\ExpenseTypeController;
+use App\Http\Controllers\Api\PrivacyPolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,24 +37,25 @@ Route::post('/auth/google', [AuthController::class, 'googleAuth']);
 // NOTE: Remove public access to user/profile before release
 Route::get('/stations/nearby', [ServiceStationController::class, 'nearby']); // Legacy alias
 
-// Manual routes (temporarily public for testing)
-Route::apiResource('manuals', ManualController::class);
-// Advice routes (public for now)
-Route::get('/advice', [AdviceController::class, 'index']);
+// Public GET routes protected by API key (if configured)
+Route::middleware('api.key')->group(function () {
+    Route::apiResource('manuals', ManualController::class)->only(['index', 'show']);
+    Route::get('/advice', [AdviceController::class, 'index']);
 
-// Car data cached proxy routes
-Route::get('/car-data/makers', [CarDataController::class, 'makers']);
-Route::get('/car-data/models', [CarDataController::class, 'models']);
-Route::get('/car-data/trims', [CarDataController::class, 'trims']);
+    // Car data cached proxy routes
+    Route::get('/car-data/makers', [CarDataController::class, 'makers']);
+    Route::get('/car-data/models', [CarDataController::class, 'models']);
+    Route::get('/car-data/trims', [CarDataController::class, 'trims']);
 
-// Public data routes
-Route::get('/reminder-types', [App\Http\Controllers\Api\ReminderTypeController::class, 'index']);
-Route::get('/manual-sections', [App\Http\Controllers\Api\ManualSectionController::class, 'index']);
-Route::get('/advice-sections', [App\Http\Controllers\Api\AdviceSectionController::class, 'index']);
-Route::get('/expense-types', [ExpenseTypeController::class, 'index']);
-Route::get('/faq', [App\Http\Controllers\Api\FaqController::class, 'index']);
-Route::get('/faq/categories', [App\Http\Controllers\Api\FaqController::class, 'categories']);
-Route::get('/faq/questions', [App\Http\Controllers\Api\FaqController::class, 'questions']);
+    // Public data routes
+    Route::get('/reminder-types', [App\Http\Controllers\Api\ReminderTypeController::class, 'index']);
+    Route::get('/manual-sections', [App\Http\Controllers\Api\ManualSectionController::class, 'index']);
+    Route::get('/advice-sections', [App\Http\Controllers\Api\AdviceSectionController::class, 'index']);
+    Route::get('/expense-types', [ExpenseTypeController::class, 'index']);
+    Route::get('/faq', [App\Http\Controllers\Api\FaqController::class, 'index']);
+    Route::get('/faq/categories', [App\Http\Controllers\Api\FaqController::class, 'categories']);
+    Route::get('/faq/questions', [App\Http\Controllers\Api\FaqController::class, 'questions']);
+});
 
 // Google Places API routes
 Route::get('/google-places/nearby-search', [App\Http\Controllers\Api\GooglePlacesController::class, 'nearbySearch']);
@@ -96,4 +98,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history/{userId}/static', [ExpensesHistoryController::class, 'statistics']);
     Route::get('/vehicles/{vehicleId}/history', [ExpensesHistoryController::class, 'byVehicle']);
     
+});
+
+// Public privacy policy routes
+Route::get('/privacy-policy/{language}', [PrivacyPolicyController::class, 'show']);
+
+// Admin privacy policy routes (protected)
+Route::middleware('api.key')->group(function () {
+    Route::get('/admin/privacy-policy', [PrivacyPolicyController::class, 'index']);
+    Route::post('/admin/privacy-policy', [PrivacyPolicyController::class, 'store']);
+    Route::put('/admin/privacy-policy/{privacyPolicy}', [PrivacyPolicyController::class, 'update']);
+    Route::delete('/admin/privacy-policy/{privacyPolicy}', [PrivacyPolicyController::class, 'destroy']);
 });

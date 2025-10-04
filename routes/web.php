@@ -13,11 +13,22 @@ use App\Http\Controllers\Admin\AdminDefaultManualController;
 use App\Http\Controllers\Admin\AdminAdviceSectionController;
 use App\Http\Controllers\Admin\AdminAdviceItemController;
 use App\Http\Controllers\Admin\ExpenseTypeController;
+use App\Http\Controllers\Admin\PrivacyPolicyController;
+use App\Http\Controllers\Admin\AdminCarDataController;
+use App\Http\Controllers\Admin\AdminCarMakerController;
+use App\Http\Controllers\Admin\AdminCarModelController;
+use App\Http\Controllers\Admin\AdminCarEngineController;
+use App\Http\Controllers\PrivacyPolicyPublicController;
 
 // Главная страница
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Публичная страница политики конфиденциальности
+Route::get('/privacy-policy/{locale}', [PrivacyPolicyPublicController::class, 'show'])
+    ->where('locale', '[a-zA-Z_-]+')
+    ->name('privacy-policy.show');
 
 // Админка - аутентификация
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -40,6 +51,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('manual-sections', AdminManualSectionController::class);
         Route::resource('default-manuals', AdminDefaultManualController::class);
         Route::resource('expense-types', ExpenseTypeController::class);
+        Route::resource('privacy-policy', PrivacyPolicyController::class);
         
         // Управление советами
         Route::resource('advice-sections', AdminAdviceSectionController::class);
@@ -56,6 +68,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('vehicles', [AdminDataViewController::class, 'vehicles'])->name('vehicles');
             Route::get('vehicles/{vehicle}', [AdminDataViewController::class, 'vehicleShow'])->name('vehicles.show');
             Route::get('statistics', [AdminDataViewController::class, 'statistics'])->name('statistics');
+        });
+
+        // Справочники авто (табы: производители/модели/двигатели/импорт)
+        Route::get('car-data', [AdminCarDataController::class, 'index'])->name('car-data.index');
+        Route::post('car-data/import', [AdminCarDataController::class, 'import'])->name('car-data.import');
+
+        // CRUD без API
+        Route::prefix('car-data')->name('car-data.')->group(function () {
+            Route::resource('makers', AdminCarMakerController::class)->parameters(['makers' => 'maker']);
+            Route::resource('models', AdminCarModelController::class)->parameters(['models' => 'model']);
+            Route::resource('engines', AdminCarEngineController::class)->parameters(['engines' => 'engine']);
         });
     });
 });
