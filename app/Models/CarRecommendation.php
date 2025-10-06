@@ -33,8 +33,12 @@ class CarRecommendation extends Model
      */
     public function scopeForCar($query, $maker, $model, $year = null)
     {
-        $query->where('maker', $maker)
-              ->where('model', $model);
+        // Case-insensitive сравнение марки и модели
+        $normalizedMaker = mb_strtolower((string) $maker);
+        $normalizedModel = mb_strtolower((string) $model);
+
+        $query->whereRaw('LOWER(maker) = ?', [$normalizedMaker])
+              ->whereRaw('LOWER(model) = ?', [$normalizedModel]);
               
         if ($year) {
             $query->where('year', $year);

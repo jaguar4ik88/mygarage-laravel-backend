@@ -217,7 +217,13 @@
                                     <tr>
                                         <td>{{ $vehicle->make }} {{ $vehicle->model }}</td>
                                         <td>{{ $vehicle->user->name ?? 'Неизвестно' }}</td>
-                                        <td>{{ $vehicle->created_at->format('d.m.Y') }}</td>
+                                        <td>
+                                            @if($vehicle->added_at)
+                                                {{ \Carbon\Carbon::parse($vehicle->added_at)->format('d.m.Y') }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
