@@ -38,8 +38,12 @@ class AdminController extends Controller
         // Последние пользователи
         $recentUsers = User::latest()->take(5)->get();
 
-        // Последние транспортные средства
-        $recentVehicles = Vehicle::with('user')->latest()->take(5)->get();
+        // Последние транспортные средства (по last_modified_at, затем added_at)
+        $recentVehicles = Vehicle::with('user')
+            ->orderByDesc('last_modified_at')
+            ->orderByDesc('added_at')
+            ->take(5)
+            ->get();
 
         return view('admin.dashboard', compact('stats', 'monthlyStats', 'recentUsers', 'recentVehicles'));
     }
