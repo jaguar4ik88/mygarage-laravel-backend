@@ -82,44 +82,42 @@ class CarRecommendationController extends Controller
         if ($request->filled('year')) {
             $targetYear = (int) $request->year;
             $recommendations = $recommendations->filter(function ($rec) use ($targetYear) {
-                $period = trim((string) $rec->year);
-                if ($period === '') return true; // на всякий случай показываем
+                $raw = (string) $rec->year;
+                $period = trim(mb_strtolower($raw));
+                if ($period === '') return true;
 
-                // 1) Точный год
-                if (preg_match('/^\d{4}$/', $period)) {
-                    return (int) $period === $targetYear;
-                }
+                // Нормализуем разные тире к '-'
+                $period = str_replace(["–", "—", "−"], "-", $period);
+                // Убираем служебные слова
+                $period = preg_replace('/\bгод(а|ов)?\b/iu', '', $period);
+                $period = preg_replace('/\s+/u', ' ', trim($period));
 
-                // 2) Диапазон "YYYY-YYYY"
-                if (preg_match('/(\d{4})\s*-\s*(\d{4})/', $period, $m)) {
-                    $start = (int) $m[1];
-                    $end = (int) $m[2];
-                    if ($start > 0 && $end > 0 && $start <= $end) {
+                // Если встречаются годы, используем их
+                if (preg_match_all('/\d{4}/', $period, $all)) {
+                    $years = array_map('intval', $all[0]);
+                    if (count($years) === 1) {
+                        return $years[0] === $targetYear;
+                    }
+                    if (count($years) >= 2) {
+                        $start = min($years[0], $years[1]);
+                        $end = max($years[0], $years[1]);
                         return $targetYear >= $start && $targetYear <= $end;
                     }
                 }
 
-                // 3) "до YYYY" / "до YYYY года"
-                if (preg_match('/до\s*(\d{4})/iu', $period, $m)) {
-                    $limit = (int) $m[1];
-                    return $targetYear <= $limit;
+                // Текстовые формы
+                if (preg_match('/^до\s*(\d{4})/iu', $period, $m)) {
+                    return $targetYear <= (int) $m[1];
+                }
+                if (preg_match('/^(после|с)\s*(\d{4})/iu', $period, $m)) {
+                    return $targetYear >= (int) $m[2];
                 }
 
-                // 4) "после YYYY" / "с YYYY"
-                if (preg_match('/после\s*(\d{4})/iu', $period, $m)) {
-                    $limit = (int) $m[1];
-                    return $targetYear >= $limit;
-                }
-                if (preg_match('/^с\s*(\d{4})/iu', $period, $m)) {
-                    $limit = (int) $m[1];
-                    return $targetYear >= $limit;
-                }
-
-                // Если формат неизвестен — не фильтруем (чтобы не прятать данные)
+                // Неизвестный формат — оставим (лучше показать, чем скрыть)
                 return true;
             })->values();
 
-            // Если после строгой фильтрации по году ничего не найдено, вернём все по марке+модели (fallback)
+            // Если после фильтрации ничего нет, показываем все периоды для марки+модели (пусто быть не должно)
             if ($recommendations->isEmpty()) {
                 $recommendations = $query->with(['manualSection', 'translations'])
                     ->orderBy('mileage_interval', 'asc')
