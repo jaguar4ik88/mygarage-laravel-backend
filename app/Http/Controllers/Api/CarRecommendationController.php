@@ -38,12 +38,20 @@ class CarRecommendationController extends Controller
         }
 
         // Включение связанных данных
-        $query->with(['manualSection', 'translations']);
+        $query->with(['manualSection.titleGroup', 'translations']);
 
         // Сортировка по пробегу
         $query->orderBy('mileage_interval', 'asc');
 
         $recommendations = $query->get();
+
+        // Пробрасываем локализованный заголовок секции
+        $locale = $request->get('locale', 'ru');
+        $recommendations->each(function ($rec) use ($locale) {
+            if ($rec->manualSection) {
+                $rec->manualSection->localized_title = $rec->manualSection->getTitleAttribute($locale);
+            }
+        });
 
         return response()->json([
             'success' => true,
@@ -74,7 +82,7 @@ class CarRecommendationController extends Controller
             $query->forMileage($request->mileage);
         }
 
-        $recommendations = $query->with(['manualSection', 'translations'])
+        $recommendations = $query->with(['manualSection.titleGroup', 'translations'])
             ->orderBy('mileage_interval', 'asc')
             ->get();
 
@@ -119,11 +127,19 @@ class CarRecommendationController extends Controller
 
             // Если после фильтрации ничего нет, показываем все периоды для марки+модели (пусто быть не должно)
             if ($recommendations->isEmpty()) {
-                $recommendations = $query->with(['manualSection', 'translations'])
+                $recommendations = $query->with(['manualSection.titleGroup', 'translations'])
                     ->orderBy('mileage_interval', 'asc')
                     ->get();
             }
         }
+
+        // Пробрасываем локализованный заголовок секции
+        $locale = $request->get('locale', 'ru');
+        $recommendations->each(function ($rec) use ($locale) {
+            if ($rec->manualSection) {
+                $rec->manualSection->localized_title = $rec->manualSection->getTitleAttribute($locale);
+            }
+        });
 
         return response()->json([
             'success' => true,
@@ -136,7 +152,7 @@ class CarRecommendationController extends Controller
      */
     public function show(CarRecommendation $carRecommendation): JsonResponse
     {
-        $carRecommendation->load('manualSection');
+        $carRecommendation->load(['manualSection.titleGroup']);
 
         return response()->json([
             'success' => true,
