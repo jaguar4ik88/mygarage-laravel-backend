@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\VehicleManual;
-use App\Models\DefaultManual;
 use App\Models\ManualSection;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -81,16 +80,8 @@ class ManualController extends Controller
                     ];
                 });
             } else {
-                $sections = ManualSection::with([
-                    'defaults' => function ($q) {
-                        $q->with(['translations' => function ($query) {
-                            // load all translations to allow locale fallback
-                        }])->orderBy('id');
-                    },
-                    'translations' => function ($query) {
-                        // load all translations to allow locale fallback
-                    }
-                ])
+                // Возвращаем пустые секции, так как default_manuals удалены
+                $sections = ManualSection::with(['translations'])
                     ->orderBy('sort_order')
                     ->orderBy('id')
                     ->get()
@@ -106,23 +97,7 @@ class ManualController extends Controller
                                 'slug' => $section->slug,
                                 'title' => $title,
                             ],
-                            'items' => $section->defaults->map(function ($manual) use ($locale) {
-                                $translation = $manual->translations->firstWhere('locale', $locale)
-                                    ?? $manual->translations->firstWhere('locale', 'uk')
-                                    ?? $manual->translations->first();
-                                $title = $translation?->title ?? $manual->title;
-                                $content = $translation?->content ?? $manual->content;
-                                
-                                return [
-                                    'id' => $manual->id,
-                                    'title' => $title,
-                                    'content' => $this->normalizeContent($content),
-                                    'icon' => null,
-                                    'pdf_url' => $manual->pdf_url,
-                                    'created_at' => $manual->created_at,
-                                    'updated_at' => $manual->updated_at,
-                                ];
-                            }),
+                            'items' => [], // Пустой массив, так как default_manuals удалены
                         ];
                     });
             }

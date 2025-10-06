@@ -33,7 +33,10 @@ class AdminVehicleController extends Controller
             $query->where('make', $request->get('make'));
         }
 
-        $vehicles = $query->latest()->paginate(15);
+        $vehicles = $query
+            ->orderByDesc('last_modified_at')
+            ->orderByDesc('added_at')
+            ->paginate(15);
         $users = User::orderBy('name')->get();
         $makes = Vehicle::distinct()->pluck('make')->sort();
 

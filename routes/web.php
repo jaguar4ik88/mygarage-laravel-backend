@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\AdminManualSectionController;
 use App\Http\Controllers\Admin\AdminFaqController;
 use App\Http\Controllers\Admin\AdminFaqQuestionController;
 use App\Http\Controllers\Admin\AdminDataViewController;
-use App\Http\Controllers\Admin\AdminDefaultManualController;
 use App\Http\Controllers\Admin\AdminAdviceSectionController;
 use App\Http\Controllers\Admin\AdminAdviceItemController;
 use App\Http\Controllers\Admin\ExpenseTypeController;
@@ -18,6 +17,8 @@ use App\Http\Controllers\Admin\AdminCarDataController;
 use App\Http\Controllers\Admin\AdminCarMakerController;
 use App\Http\Controllers\Admin\AdminCarModelController;
 use App\Http\Controllers\Admin\AdminCarEngineController;
+use App\Http\Controllers\Admin\AdminCarRecommendationController;
+use App\Http\Controllers\Admin\AdminCarTyreController;
 use App\Http\Controllers\PrivacyPolicyPublicController;
 
 // Главная страница
@@ -49,7 +50,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Управление системными данными
         Route::resource('reminder-types', AdminReminderTypeController::class);
         Route::resource('manual-sections', AdminManualSectionController::class);
-        Route::resource('default-manuals', AdminDefaultManualController::class);
         Route::resource('expense-types', ExpenseTypeController::class);
         Route::resource('privacy-policy', PrivacyPolicyController::class);
         
@@ -80,5 +80,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('models', AdminCarModelController::class)->parameters(['models' => 'model']);
             Route::resource('engines', AdminCarEngineController::class)->parameters(['engines' => 'engine']);
         });
+
+        // Управление рекомендациями по обслуживанию и шинам
+        Route::resource('car-recommendations', AdminCarRecommendationController::class);
+        Route::resource('car-tyres', AdminCarTyreController::class);
     });
 });
