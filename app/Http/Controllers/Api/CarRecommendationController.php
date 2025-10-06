@@ -30,9 +30,7 @@ class CarRecommendationController extends Controller
         }
 
         // Фильтрация по пробегу
-        if ($request->has('mileage')) {
-            $query->forMileage($request->mileage);
-        }
+        // Игнорируем пробег в выборке рекомендаций по запросу
 
         // Фильтрация по типу обслуживания
         if ($request->has('item')) {
