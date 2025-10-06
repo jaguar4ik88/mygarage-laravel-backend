@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\AdviceController;
 use App\Http\Controllers\Api\CarDataController;
 use App\Http\Controllers\Api\ExpenseTypeController;
 use App\Http\Controllers\Api\PrivacyPolicyController;
+use App\Http\Controllers\Api\CarRecommendationController;
+use App\Http\Controllers\Api\CarTyreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +57,22 @@ Route::middleware('api.key')->group(function () {
     Route::get('/faq', [App\Http\Controllers\Api\FaqController::class, 'index']);
     Route::get('/faq/categories', [App\Http\Controllers\Api\FaqController::class, 'categories']);
     Route::get('/faq/questions', [App\Http\Controllers\Api\FaqController::class, 'questions']);
+    
+    // Car recommendations and tyres routes
+    Route::get('/car-recommendations', [CarRecommendationController::class, 'index']);
+    Route::get('/car-recommendations/for-car', [CarRecommendationController::class, 'forCar']);
+    Route::get('/car-recommendations/makers', [CarRecommendationController::class, 'makers']);
+    Route::get('/car-recommendations/models', [CarRecommendationController::class, 'models']);
+    Route::get('/car-recommendations/items', [CarRecommendationController::class, 'items']);
+    Route::get('/car-recommendations/{carRecommendation}', [CarRecommendationController::class, 'show']);
+    
+    Route::get('/car-tyres', [CarTyreController::class, 'index']);
+    Route::get('/car-tyres/for-car', [CarTyreController::class, 'forCar']);
+    Route::get('/car-tyres/brands', [CarTyreController::class, 'brands']);
+    Route::get('/car-tyres/models', [CarTyreController::class, 'models']);
+    Route::get('/car-tyres/dimensions', [CarTyreController::class, 'dimensions']);
+    Route::get('/car-tyres/dimensions-for-car', [CarTyreController::class, 'dimensionsForCar']);
+    Route::get('/car-tyres/{carTyre}', [CarTyreController::class, 'show']);
 });
 
 // Google Places API routes
@@ -97,6 +115,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/history/{userId}/delete/{id}', [ExpensesHistoryController::class, 'destroy']);
     Route::get('/history/{userId}/static', [ExpensesHistoryController::class, 'statistics']);
     Route::get('/vehicles/{vehicleId}/history', [ExpensesHistoryController::class, 'byVehicle']);
+    
+    // Admin routes for car recommendations and tyres
+    Route::apiResource('car-recommendations', CarRecommendationController::class)->except(['index', 'show']);
+    Route::apiResource('car-tyres', CarTyreController::class)->except(['index', 'show']);
     
 });
 

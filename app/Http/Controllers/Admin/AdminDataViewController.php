@@ -35,7 +35,10 @@ class AdminDataViewController extends Controller
             $query->where('make', $request->get('make'));
         }
 
-        $vehicles = $query->latest()->paginate(20);
+        $vehicles = $query
+            ->orderByDesc('last_modified_at')
+            ->orderByDesc('added_at')
+            ->paginate(20);
         $users = User::orderBy('name')->get();
         $makes = Vehicle::distinct()->pluck('make')->sort();
 

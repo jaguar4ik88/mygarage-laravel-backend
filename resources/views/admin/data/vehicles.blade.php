@@ -91,7 +91,13 @@
                                         @endif
                                     </td>
                                     <td>{{ number_format($vehicle->mileage) }} км</td>
-                                    <td>{{ $vehicle->created_at->format('d.m.Y') }}</td>
+                                    <td>
+                                        @if($vehicle->added_at)
+                                            {{ \Carbon\Carbon::parse($vehicle->added_at)->format('d.m.Y') }}
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('admin.data.vehicles.show', $vehicle) }}" 
                                            class="btn btn-outline-info btn-sm" 

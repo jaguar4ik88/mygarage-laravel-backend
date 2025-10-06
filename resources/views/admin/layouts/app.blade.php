@@ -99,6 +99,26 @@
             width: 16px;
             height: 16px;
         }
+
+        /* Tailwind-like Laravel pagination fallback (when default template is used) */
+        .pagination-container nav [aria-disabled="true"] > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* prevent icon overflow */
+            line-height: 1;   /* keep icon vertically centered */
+        }
+        .pagination-container nav [aria-disabled="true"] > span svg {
+            width: 1em;       /* scale with font-size of container */
+            height: 1em;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        /* Ensure all pagination icons fit the control area */
+        .pagination-container nav svg.w-5.h-5 {
+            width: 16px !important;
+            height: 16px !important;
+        }
     </style>
 </head>
 <body>
@@ -149,12 +169,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.default-manuals.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.default-manuals.index') }}">
-                                <i class="bi bi-journal-text"></i> Дефолтные инструкции
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.advice-sections.*') ? 'active' : '' }}" 
                                href="{{ route('admin.advice-sections.index') }}">
                                 <i class="bi bi-lightbulb"></i> Секции советов
@@ -188,6 +202,18 @@
                             <a class="nav-link {{ request()->routeIs('admin.car-data.*') ? 'active' : '' }}" 
                                href="{{ route('admin.car-data.index') }}">
                                 <i class="bi bi-gear-wide-connected"></i> Справочники авто
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.car-recommendations.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.car-recommendations.index') }}">
+                                <i class="bi bi-wrench"></i> Рекомендации по обслуживанию
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.car-tyres.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.car-tyres.index') }}">
+                                <i class="bi bi-circle"></i> Рекомендации по шинам
                             </a>
                         </li>
                     </ul>

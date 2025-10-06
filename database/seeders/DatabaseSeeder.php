@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ExpenseTypeSeeder::class,
             ManualSectionSeeder::class,
-            DefaultManualSeeder::class,
             AdviceSeeder::class,
         ]);
     }
