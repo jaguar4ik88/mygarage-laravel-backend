@@ -390,7 +390,7 @@
                         витратами та обслуговуванням вашого автомобіля.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="#" class="btn btn-light btn-lg btn-download btn-app-store">
+                        <a href="https://apps.apple.com/us/app/mygarage-uno/id6753170441" target="_blank" class="btn btn-light btn-lg btn-download btn-app-store">
                             <i class="bi bi-apple"></i>
                             <div class="d-flex flex-column align-items-start">
                                 <small>Download on the</small>

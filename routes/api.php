@@ -34,6 +34,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/google', [AuthController::class, 'googleAuth']);
+Route::post('/auth/apple', [AuthController::class, 'appleAuth']);
+
+// Password reset routes
+Route::post('/password/forgot', [App\Http\Controllers\Api\PasswordResetController::class, 'forgotPassword']);
+Route::post('/password/reset', [App\Http\Controllers\Api\PasswordResetController::class, 'resetPassword']);
 
 // Public API routes (only for testing/development)
 // NOTE: Remove public access to user/profile before release
