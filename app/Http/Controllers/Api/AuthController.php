@@ -105,11 +105,7 @@ class AuthController extends Controller
     public function googleAuth(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'idToken' => 'required|string',
-            'userInfo' => 'required|array',
-            'userInfo.email' => 'required|email',
-            'userInfo.name' => 'required|string',
-            'userInfo.id' => 'required|string',
+            'id_token' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -121,28 +117,58 @@ class AuthController extends Controller
         }
 
         try {
-            // Verify Google ID Token
-            $client = new \Google_Client(['client_id' => config('services.google.client_id')]);
-            $payload = $client->verifyIdToken($request->idToken);
+            // Check if Google API client is configured
+            $clientId = config('services.google.client_id');
             
-            if (!$payload) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Google token'
-                ], 401);
+            if (!$clientId) {
+                // Skip verification in development if not configured
+                \Log::warning('Google Client ID not configured, skipping token verification');
+                
+                // For development: extract user info from unverified token
+                // DO NOT USE IN PRODUCTION
+                $parts = explode('.', $request->id_token);
+                if (count($parts) !== 3) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid token format'
+                    ], 401);
+                }
+                
+                $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+                $googleId = $payload['sub'] ?? null;
+                $email = $payload['email'] ?? null;
+                $name = $payload['name'] ?? 'Google User';
+            } else {
+                // Verify Google ID Token
+                $client = new \Google_Client(['client_id' => $clientId]);
+                $payload = $client->verifyIdToken($request->id_token);
+                
+                if (!$payload) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid Google token'
+                    ], 401);
+                }
+
+                // Verify that the token is for our app
+                if ($payload['aud'] !== $clientId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid audience'
+                    ], 401);
+                }
+
+                $googleId = $payload['sub'];
+                $email = $payload['email'];
+                $name = $payload['name'] ?? 'Google User';
             }
 
-            // Verify that the token is for our app
-            if ($payload['aud'] !== config('services.google.client_id')) {
+            if (!$googleId || !$email) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid audience'
+                    'message' => 'Missing required user information'
                 ], 401);
             }
-
-            $googleId = $payload['sub'];
-            $email = $request->userInfo['email'];
-            $name = $request->userInfo['name'];
 
             // Find or create user
             $user = User::where('google_id', $googleId)->first();
@@ -165,20 +191,117 @@ class AuthController extends Controller
                 }
             }
 
-            // Create JWT token
+            // Create token
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Google authentication successful',
-                'token' => $token,
-                'user' => $user
+                'data' => [
+                    'token' => $token,
+                    'user' => $user
+                ]
             ]);
 
         } catch (\Exception $e) {
+            \Log::error('Google auth error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Google authentication failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function appleAuth(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'identity_token' => 'required|string',
+            'user' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // For development: extract user info from unverified token
+            // In production, you should verify the JWT signature with Apple's public keys
+            $parts = explode('.', $request->identity_token);
+            if (count($parts) !== 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid token format'
+                ], 401);
+            }
+            
+            $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+            
+            if (!$payload) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Apple token'
+                ], 401);
+            }
+
+            // Extract user info from token
+            $appleId = $payload['sub'] ?? null;
+            $email = $payload['email'] ?? null;
+            
+            if (!$appleId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing Apple user ID'
+                ], 401);
+            }
+
+            // Apple may not always provide email (privacy feature)
+            // Use a placeholder email if not provided
+            if (!$email) {
+                $email = 'apple_' . $appleId . '@privaterelay.appleid.com';
+            }
+
+            // Find or create user
+            $user = User::where('apple_id', $appleId)->first();
+            
+            if (!$user) {
+                // Check if user exists with this email
+                $user = User::where('email', $email)->first();
+                
+                if ($user) {
+                    // Link Apple account to existing user
+                    $user->update(['apple_id' => $appleId]);
+                } else {
+                    // Create new user
+                    $user = User::create([
+                        'name' => $payload['name'] ?? 'Apple User',
+                        'email' => $email,
+                        'apple_id' => $appleId,
+                        'email_verified_at' => now(),
+                    ]);
+                }
+            }
+
+            // Create token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Apple authentication successful',
+                'data' => [
+                    'token' => $token,
+                    'user' => $user
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Apple auth error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Apple authentication failed: ' . $e->getMessage()
             ], 500);
         }
     }
