@@ -72,6 +72,36 @@ class User extends Authenticatable
         return $this->hasMany(ServiceStation::class);
     }
 
+    public function expensesHistory(): HasMany
+    {
+        return $this->hasMany(ExpensesHistory::class);
+    }
+
+    /**
+     * Удаление пользователя со всеми связанными данными
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($user) {
+            // Удаляем все машины пользователя (каскадно удалятся связанные данные)
+            $user->vehicles()->delete();
+            
+            // Удаляем напоминания
+            $user->reminders()->delete();
+            
+            // Удаляем СТО
+            $user->serviceStations()->delete();
+            
+            // Удаляем траты
+            $user->expensesHistory()->delete();
+            
+            // Удаляем токены авторизации
+            $user->tokens()->delete();
+        });
+    }
+
     /**
      * Get the user's current subscription plan
      */
