@@ -216,7 +216,8 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'identity_token' => 'required|string',
-            'user' => 'nullable|string',
+            'user' => 'nullable|string', // Данные пользователя (только при первой авторизации)
+            'full_name' => 'nullable|string', // Полное имя (только при первой авторизации)
         ]);
 
         if ($validator->fails()) {
@@ -264,6 +265,28 @@ class AuthController extends Controller
                 $email = 'apple_' . $appleId . '@privaterelay.appleid.com';
             }
 
+            // Получаем имя пользователя
+            // Apple передаёт имя только при первой авторизации
+            $userName = 'Apple User';
+            
+            if ($request->full_name) {
+                // Если передано полное имя напрямую
+                $userName = $request->full_name;
+            } elseif ($request->user) {
+                // Если передан JSON с данными пользователя
+                $userData = json_decode($request->user, true);
+                if ($userData && isset($userData['name'])) {
+                    $fullName = $userData['name'];
+                    // Комбинируем firstName и lastName
+                    $userName = trim(
+                        ($fullName['firstName'] ?? '') . ' ' . ($fullName['lastName'] ?? '')
+                    );
+                    if (empty($userName)) {
+                        $userName = 'Apple User';
+                    }
+                }
+            }
+
             // Find or create user
             $user = User::where('apple_id', $appleId)->first();
             
@@ -277,7 +300,7 @@ class AuthController extends Controller
                 } else {
                     // Create new user
                     $user = User::create([
-                        'name' => $payload['name'] ?? 'Apple User',
+                        'name' => $userName,
                         'email' => $email,
                         'apple_id' => $appleId,
                         'email_verified_at' => now(),
