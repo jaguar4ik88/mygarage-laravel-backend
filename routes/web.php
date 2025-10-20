@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AdminCarModelController;
 use App\Http\Controllers\Admin\AdminCarEngineController;
 use App\Http\Controllers\Admin\AdminCarRecommendationController;
 use App\Http\Controllers\Admin\AdminCarTyreController;
+use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\PrivacyPolicyPublicController;
 
 // Главная страница
@@ -48,7 +49,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', AdminUserController::class);
         
         // Управление подписками
-        Route::resource('subscriptions', Admin\SubscriptionController::class);
+        Route::resource('subscriptions', SubscriptionController::class);
         
         // Управление системными данными
         Route::resource('reminder-types', AdminReminderTypeController::class);
