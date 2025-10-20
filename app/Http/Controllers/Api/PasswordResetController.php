@@ -29,22 +29,37 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        // Send password reset link
-        $status = Password::sendResetLink(
-            $request->only('email')
+        // Генерируем 6-значный код
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        
+        // Сохраняем код в таблице password_reset_tokens
+        \DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            [
+                'email' => $request->email,
+                'token' => Hash::make($code),
+                'created_at' => now(),
+            ]
         );
 
-        if ($status === Password::RESET_LINK_SENT) {
+        // Отправляем письмо с кодом
+        try {
+            \Mail::send('emails.password-reset-code', ['code' => $code], function ($message) use ($request) {
+                $message->to($request->email)
+                    ->subject('Код для сброса пароля - myGarage');
+            });
+
             return response()->json([
                 'success' => true,
-                'message' => 'Password reset link sent to your email',
+                'message' => 'Password reset code sent to your email',
             ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send password reset email: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to send reset code',
+            ], 500);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Unable to send reset link',
-        ], 500);
     }
 
     /**
@@ -53,7 +68,7 @@ class PasswordResetController extends Controller
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'token' => 'required',
+            'token' => 'required|string|size:6',
             'email' => 'required|email',
             'password' => 'required|min:8|confirmed',
         ]);
@@ -66,30 +81,57 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
+        // Проверяем код
+        $resetRecord = \DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
 
-                $user->save();
-
-                event(new PasswordReset($user));
-            }
-        );
-
-        if ($status === Password::PASSWORD_RESET) {
+        if (!$resetRecord) {
             return response()->json([
-                'success' => true,
-                'message' => 'Password has been reset successfully',
-            ]);
+                'success' => false,
+                'message' => 'Invalid reset code',
+            ], 400);
         }
 
+        // Проверяем срок действия (60 минут)
+        if (now()->diffInMinutes($resetRecord->created_at) > 60) {
+            \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return response()->json([
+                'success' => false,
+                'message' => 'Reset code has expired',
+            ], 400);
+        }
+
+        // Проверяем код
+        if (!Hash::check($request->token, $resetRecord->token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid reset code',
+            ], 400);
+        }
+
+        // Обновляем пароль
+        $user = \App\Models\User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->setRememberToken(Str::random(60));
+        $user->save();
+
+        // Удаляем использованный код
+        \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        event(new PasswordReset($user));
+
         return response()->json([
-            'success' => false,
-            'message' => $this->getResetErrorMessage($status),
-        ], 400);
+            'success' => true,
+            'message' => 'Password has been reset successfully',
+        ]);
     }
 
     /**
