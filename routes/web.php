@@ -47,6 +47,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Управление пользователями
         Route::resource('users', AdminUserController::class);
         
+        // Управление подписками
+        Route::resource('subscriptions', Admin\SubscriptionController::class);
+        
         // Управление системными данными
         Route::resource('reminder-types', AdminReminderTypeController::class);
         Route::resource('manual-sections', AdminManualSectionController::class);

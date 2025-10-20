@@ -123,7 +123,7 @@
                                         <td>{{ $vehicle->model }}</td>
                                         <td>{{ $vehicle->year }}</td>
                                         <td>{{ number_format($vehicle->mileage) }} км</td>
-                                        <td>{{ $vehicle->created_at->format('d.m.Y') }}</td>
+                                        <td>{{ $vehicle->created_at ? $vehicle->created_at->format('d.m.Y') : '-' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

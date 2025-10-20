@@ -37,6 +37,23 @@ class ReminderController extends Controller
         // Логируем входящие данные для отладки
         \Log::info('Creating reminder with data:', $request->all());
         
+        $user = $request->user();
+        
+        // Check subscription limits
+        if (!$user->canAddReminder()) {
+            $maxReminders = $user->getMaxReminders();
+            $planType = $user->plan_type;
+            
+            return response()->json([
+                'success' => false,
+                'message' => "You have reached the maximum number of reminders ($maxReminders) for your $planType plan",
+                'upgrade_required' => true,
+                'limit_reached' => true,
+                'max_reminders' => $maxReminders,
+                'current_plan' => $planType,
+            ], 403);
+        }
+        
         $validator = Validator::make($request->all(), [
             'type' => 'required|string|max:255',
             'title' => 'required|string|max:255',
@@ -56,7 +73,7 @@ class ReminderController extends Controller
 
         // Добавляем user_id из аутентифицированного пользователя
         $reminderData = $request->all();
-        $reminderData['user_id'] = $request->user()->id;
+        $reminderData['user_id'] = $user->id;
         
         $reminder = Reminder::create($reminderData);
         \Log::info('Reminder created successfully:', $reminder->toArray());
