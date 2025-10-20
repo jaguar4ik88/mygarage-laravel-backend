@@ -30,6 +30,9 @@ class User extends Authenticatable
         'apple_id',
         'plan_type',
         'subscription_expires_at',
+        'platform',
+        'transaction_id',
+        'reminder_expenses_enabled',
     ];
 
     /**
@@ -54,6 +57,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'subscription_expires_at' => 'datetime',
+            'reminder_expenses_enabled' => 'boolean',
         ];
     }
 
@@ -75,6 +79,16 @@ class User extends Authenticatable
     public function expensesHistory(): HasMany
     {
         return $this->hasMany(ExpensesHistory::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    public function vehicleDocuments(): HasMany
+    {
+        return $this->hasMany(VehicleDocument::class);
     }
 
     /**
@@ -99,6 +113,12 @@ class User extends Authenticatable
             
             // Удаляем токены авторизации
             $user->tokens()->delete();
+            
+            // Удаляем подписки
+            $user->subscriptions()->delete();
+            
+            // Удаляем документы
+            $user->vehicleDocuments()->delete();
         });
     }
 
@@ -132,6 +152,90 @@ class User extends Authenticatable
     }
 
     /**
+     * Get current active subscription
+     */
+    public function currentSubscription()
+    {
+        return $this->subscriptions()
+                    ->with('subscription')
+                    ->active()
+                    ->latest()
+                    ->first();
+    }
+
+    /**
+     * Get max vehicles for user's plan
+     */
+    public function getMaxVehicles(): int
+    {
+        $limits = [
+            'free' => 1,
+            'pro' => 3,
+            'premium' => 3,
+        ];
+
+        return $limits[$this->getPlanType()] ?? 1;
+    }
+
+    /**
+     * Get max reminders for user's plan
+     */
+    public function getMaxReminders(): ?int
+    {
+        $limits = [
+            'free' => 5,
+            'pro' => null, // unlimited
+            'premium' => null, // unlimited
+        ];
+
+        return $limits[$this->getPlanType()] ?? 5;
+    }
+
+    /**
+     * Check if user can add more vehicles
+     */
+    public function canAddVehicle(): bool
+    {
+        $maxVehicles = $this->getMaxVehicles();
+        $currentCount = $this->vehicles()->count();
+        
+        return $currentCount < $maxVehicles;
+    }
+
+    /**
+     * Check if user can add more reminders
+     */
+    public function canAddReminder(): bool
+    {
+        $maxReminders = $this->getMaxReminders();
+        
+        // null means unlimited
+        if ($maxReminders === null) {
+            return true;
+        }
+        
+        $currentCount = $this->reminders()->count();
+        
+        return $currentCount < $maxReminders;
+    }
+
+    /**
+     * Check if user has PRO features access
+     */
+    public function isPro(): bool
+    {
+        return in_array($this->getPlanType(), ['pro', 'premium']) && $this->hasActiveSubscription();
+    }
+
+    /**
+     * Check if user has PREMIUM features access
+     */
+    public function isPremium(): bool
+    {
+        return $this->getPlanType() === 'premium' && $this->hasActiveSubscription();
+    }
+
+    /**
      * Get features available for user's plan
      */
     public function getPlanFeatures(): array
@@ -145,39 +249,29 @@ class User extends Authenticatable
                 'basic_advice',
                 'sto_search',
                 'basic_reports',
+                'statistics',
+                'expenses_history',
             ],
             'pro' => [
                 'vehicles_limit' => 3,
-                'reminders_limit' => -1, // unlimited
-                'photo_documents',
-                'fuel_tracking',
-                'mileage_tracking',
-                'advanced_analytics',
-                'smart_reminders',
-                'widgets',
-                'export_data',
-                'advanced_reports',
+                'reminders_limit' => null, // unlimited
+                'photo_documents', // фото документов
+                'receipt_photos', // фото чеков
+                'pdf_export', // экспорт в PDF
+                'expense_reminders', // напоминания о тратах
+                'all_free_features',
             ],
             'premium' => [
-                'vehicles_limit' => -1, // unlimited
-                'reminders_limit' => -1,
-                'gps_integration',
-                'obd_diagnosis',
-                'ai_assistant',
-                'checklists',
-                'gamification',
-                'cloud_backup',
-                'api_integrations',
+                'vehicles_limit' => 3,
+                'reminders_limit' => null,
+                'ai_assistant', // AI помощник
+                'trips', // функционал поездки
+                'fuel_tracking', // полный учет заправок
+                'mileage_tracking', // ежедневный ввод пробега
+                'smart_reminders', // умные напоминания (пробег + дата)
+                'cloud_storage', // облачное хранилище
+                'all_pro_features',
             ],
-            'business' => [
-                'vehicles_limit' => -1,
-                'reminders_limit' => -1,
-                'client_management',
-                'business_reports',
-                '1c_integration',
-                'master_app',
-                'business_analytics',
-            ]
         ];
 
         return $features[$this->getPlanType()] ?? $features['free'];

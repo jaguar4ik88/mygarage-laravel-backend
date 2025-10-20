@@ -47,9 +47,28 @@ class VehicleController extends Controller
             ], 422);
         }
 
-        // Create vehicle; associate to provided user_id or default to 1 for now
+        // Get user from auth or fallback to request user_id
+        $user = $request->user();
+        $userId = $user ? $user->id : $request->get('user_id', 1);
+
+        // Check subscription limits if user is authenticated
+        if ($user && !$user->canAddVehicle()) {
+            $maxVehicles = $user->getMaxVehicles();
+            $planType = $user->plan_type;
+            
+            return response()->json([
+                'success' => false,
+                'message' => "You have reached the maximum number of vehicles ($maxVehicles) for your $planType plan",
+                'upgrade_required' => true,
+                'limit_reached' => true,
+                'max_vehicles' => $maxVehicles,
+                'current_plan' => $planType,
+            ], 403);
+        }
+
+        // Create vehicle
         $vehicleData = $request->all();
-        $vehicleData['user_id'] = $request->get('user_id', 1);
+        $vehicleData['user_id'] = $userId;
         $vehicleData['added_at'] = now();
         $vehicleData['last_modified_at'] = now();
         $vehicle = Vehicle::create($vehicleData);

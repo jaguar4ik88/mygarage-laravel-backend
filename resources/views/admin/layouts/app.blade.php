@@ -145,6 +145,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.subscriptions.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.subscriptions.index') }}">
+                                <i class="bi bi-credit-card"></i> Подписки
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.data.vehicles*') ? 'active' : '' }}" 
                                href="{{ route('admin.data.vehicles') }}">
                                 <i class="bi bi-car-front"></i> Транспорт

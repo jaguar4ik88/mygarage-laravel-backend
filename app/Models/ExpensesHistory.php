@@ -20,6 +20,7 @@ class ExpensesHistory extends Model
         'cost',
         'service_date',
         'station_name',
+        'receipt_photo',
     ];
 
     protected $casts = [
@@ -40,5 +41,49 @@ class ExpensesHistory extends Model
     public function expenseType(): BelongsTo
     {
         return $this->belongsTo(ExpenseType::class, 'expense_type_id');
+    }
+
+    /**
+     * Check if expense has receipt
+     */
+    public function hasReceipt(): bool
+    {
+        return !empty($this->receipt_photo);
+    }
+
+    /**
+     * Get receipt URL
+     */
+    public function getReceiptUrlAttribute(): ?string
+    {
+        if (!$this->receipt_photo) {
+            return null;
+        }
+
+        return url('api/expenses/' . $this->id . '/receipt');
+    }
+
+    /**
+     * Get full receipt path for storage
+     */
+    public function getFullReceiptPathAttribute(): ?string
+    {
+        if (!$this->receipt_photo) {
+            return null;
+        }
+
+        return storage_path('app/' . $this->receipt_photo);
+    }
+
+    /**
+     * Delete receipt file when model is deleted
+     */
+    protected static function booted()
+    {
+        static::deleting(function ($expense) {
+            if ($expense->receipt_photo && \Storage::exists($expense->receipt_photo)) {
+                \Storage::delete($expense->receipt_photo);
+            }
+        });
     }
 }

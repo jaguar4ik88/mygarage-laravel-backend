@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\ExpenseTypeController;
 use App\Http\Controllers\Api\PrivacyPolicyController;
 use App\Http\Controllers\Api\CarRecommendationController;
 use App\Http\Controllers\Api\CarTyreController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\VehicleDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +88,9 @@ Route::get('/google-places/place-details', [App\Http\Controllers\Api\GooglePlace
 Route::get('/google-places/text-search', [App\Http\Controllers\Api\GooglePlacesController::class, 'textSearch']);
 Route::get('/google-places/photo', [App\Http\Controllers\Api\GooglePlacesController::class, 'photo']);
 
+// Public subscription routes (to show available plans)
+Route::get('/subscriptions', [SubscriptionController::class, 'index']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Auth routes
@@ -95,6 +100,21 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
+    
+    // Subscription routes
+    Route::get('/user/subscription', [SubscriptionController::class, 'current']);
+    Route::get('/user/subscription/features', [SubscriptionController::class, 'features']);
+    Route::post('/user/subscription/verify', [SubscriptionController::class, 'verify']);
+    Route::post('/user/subscription/cancel', [SubscriptionController::class, 'cancel']);
+    Route::post('/user/subscription/restore', [SubscriptionController::class, 'restore']);
+    
+    // Vehicle Documents routes (PRO feature)
+    Route::get('/vehicles/{vehicleId}/documents', [VehicleDocumentController::class, 'index']);
+    Route::post('/vehicles/{vehicleId}/documents', [VehicleDocumentController::class, 'store']);
+    Route::get('/vehicles/documents/{documentId}', [VehicleDocumentController::class, 'show']);
+    Route::put('/vehicles/documents/{documentId}', [VehicleDocumentController::class, 'update']);
+    Route::delete('/vehicles/documents/{documentId}', [VehicleDocumentController::class, 'destroy']);
+    Route::get('/vehicles/documents/{documentId}/download', [VehicleDocumentController::class, 'download']);
     
     // Reminder routes (protected)
     Route::apiResource('reminders', ReminderController::class);
