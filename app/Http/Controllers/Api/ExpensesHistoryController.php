@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ExpensesHistoryController extends Controller
 {
@@ -89,6 +91,7 @@ class ExpensesHistoryController extends Controller
                 'cost' => 'required|numeric|min:0',
                 'service_date' => 'required|date',
                 'station_name' => 'nullable|string|max:255',
+                'receipt_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240', // max 10MB
             ]);
 
 
@@ -113,6 +116,23 @@ class ExpensesHistoryController extends Controller
 
             $expenseData = $request->all();
             $expenseData['user_id'] = $userId;
+
+            // Handle receipt photo upload (PRO feature)
+            if ($request->hasFile('receipt_photo')) {
+                // Check if user has PRO subscription
+                if (!$user->isPro()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Receipt photos require PRO subscription',
+                        'upgrade_required' => true,
+                    ], 403);
+                }
+
+                $file = $request->file('receipt_photo');
+                $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('receipts/' . $userId, $fileName);
+                $expenseData['receipt_photo'] = $filePath;
+            }
 
             $expensesHistory = ExpensesHistory::create($expenseData);
 
@@ -160,6 +180,7 @@ class ExpensesHistoryController extends Controller
                 'cost' => 'sometimes|required|numeric|min:0',
                 'service_date' => 'sometimes|required|date',
                 'station_name' => 'nullable|string|max:255',
+                'receipt_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240', // max 10MB
             ]);
 
 
@@ -177,7 +198,34 @@ class ExpensesHistoryController extends Controller
                 ], 422);
             }
 
-            $expensesHistory->update($request->all());
+            // Verify user exists
+            $user = User::findOrFail($userId);
+
+            $updateData = $request->except(['receipt_photo']);
+
+            // Handle receipt photo upload (PRO feature)
+            if ($request->hasFile('receipt_photo')) {
+                // Check if user has PRO subscription
+                if (!$user->isPro()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Receipt photos require PRO subscription',
+                        'upgrade_required' => true,
+                    ], 403);
+                }
+
+                // Delete old receipt if exists
+                if ($expensesHistory->receipt_photo && Storage::exists($expensesHistory->receipt_photo)) {
+                    Storage::delete($expensesHistory->receipt_photo);
+                }
+
+                $file = $request->file('receipt_photo');
+                $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('receipts/' . $userId, $fileName);
+                $updateData['receipt_photo'] = $filePath;
+            }
+
+            $expensesHistory->update($updateData);
 
             Log::info('API Response: PUT /history/' . $userId . '/update/' . $id, [
                 'user_id' => $userId,

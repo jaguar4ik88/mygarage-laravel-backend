@@ -188,7 +188,14 @@ class User extends Authenticatable
             'premium' => null, // unlimited
         ];
 
-        return $limits[$this->getPlanType()] ?? 5;
+        $planType = $this->getPlanType();
+        
+        // Check if key exists in array (not using ?? because it treats null as "not set")
+        if (array_key_exists($planType, $limits)) {
+            return $limits[$planType];
+        }
+        
+        return 5; // default for unknown plans
     }
 
     /**
