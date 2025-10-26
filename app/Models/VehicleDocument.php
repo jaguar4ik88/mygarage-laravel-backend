@@ -29,6 +29,10 @@ class VehicleDocument extends Model
         'file_size' => 'integer',
     ];
 
+    protected $appends = [
+        'file_url',
+    ];
+
     /**
      * Document types
      */
