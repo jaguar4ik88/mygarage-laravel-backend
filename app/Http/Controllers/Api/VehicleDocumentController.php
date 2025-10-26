@@ -102,7 +102,7 @@ class VehicleDocumentController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('documents/' . $user->id . '/' . $vehicleId, $fileName);
+            $filePath = $file->storeAs('documents/' . $user->id . '/' . $vehicleId, $fileName, 'public');
 
             $document = VehicleDocument::create([
                 'vehicle_id' => $vehicleId,
