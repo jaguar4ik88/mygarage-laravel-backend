@@ -140,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/history/{userId}/delete/{id}', [ExpensesHistoryController::class, 'destroy']);
     Route::get('/history/{userId}/static', [ExpensesHistoryController::class, 'statistics']);
     Route::get('/vehicles/{vehicleId}/history', [ExpensesHistoryController::class, 'byVehicle']);
+    Route::get('/expenses/{expenseId}/receipt', [ExpensesHistoryController::class, 'getReceipt']);
     
     // Admin routes for car recommendations and tyres
     Route::apiResource('car-recommendations', CarRecommendationController::class)->except(['index', 'show']);
