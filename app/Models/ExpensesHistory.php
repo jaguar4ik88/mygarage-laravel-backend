@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ExpensesHistory extends Model
 {
@@ -60,6 +61,12 @@ class ExpensesHistory extends Model
             return null;
         }
 
+        // Если файл в публичной папке, возвращаем прямой URL
+        if (str_starts_with($this->receipt_photo, 'receipts/')) {
+            return Storage::disk('public')->url($this->receipt_photo);
+        }
+
+        // Для старых файлов в приватной папке используем API endpoint
         return url('api/expenses/' . $this->id . '/receipt');
     }
 

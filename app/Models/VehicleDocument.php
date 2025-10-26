@@ -62,6 +62,12 @@ class VehicleDocument extends Model
             return null;
         }
 
+        // Если файл в публичной папке, возвращаем прямой URL
+        if (str_starts_with($this->file_path, 'documents/')) {
+            return Storage::disk('public')->url($this->file_path);
+        }
+
+        // Для старых файлов в приватной папке используем API endpoint
         return url('api/vehicles/documents/' . $this->id . '/download');
     }
 
