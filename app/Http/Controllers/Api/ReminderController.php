@@ -39,20 +39,8 @@ class ReminderController extends Controller
         
         $user = $request->user();
         
-        // Check subscription limits
-        if (!$user->canAddReminder()) {
-            $maxReminders = $user->getMaxReminders();
-            $planType = $user->plan_type;
-            
-            return response()->json([
-                'success' => false,
-                'message' => "You have reached the maximum number of reminders ($maxReminders) for your $planType plan",
-                'upgrade_required' => true,
-                'limit_reached' => true,
-                'max_reminders' => $maxReminders,
-                'current_plan' => $planType,
-            ], 403);
-        }
+        // Reminder limits removed - users can delete reminders
+        // No need to check subscription limits anymore
         
         $validator = Validator::make($request->all(), [
             'type' => 'required|string|max:255',

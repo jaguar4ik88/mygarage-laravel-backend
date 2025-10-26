@@ -130,7 +130,7 @@ class ExpensesHistoryController extends Controller
 
                 $file = $request->file('receipt_photo');
                 $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('receipts/' . $userId, $fileName);
+                $filePath = $file->storeAs('receipts/' . $userId, $fileName, 'public');
                 $expenseData['receipt_photo'] = $filePath;
             }
 
@@ -221,7 +221,7 @@ class ExpensesHistoryController extends Controller
 
                 $file = $request->file('receipt_photo');
                 $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('receipts/' . $userId, $fileName);
+                $filePath = $file->storeAs('receipts/' . $userId, $fileName, 'public');
                 $updateData['receipt_photo'] = $filePath;
             }
 
@@ -426,6 +426,63 @@ class ExpensesHistoryController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch vehicle expense history',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get receipt photo for expense
+     */
+    public function getReceipt(Request $request, $expenseId)
+    {
+        try {
+            Log::info('API Request: GET /expenses/' . $expenseId . '/receipt', [
+                'expense_id' => $expenseId,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+
+            $expense = ExpensesHistory::findOrFail($expenseId);
+            
+            // Check if user has access to this expense
+            if ($expense->user_id !== $request->user()->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied'
+                ], 403);
+            }
+
+            if (!$expense->receipt_photo || !Storage::exists($expense->receipt_photo)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Receipt photo not found'
+                ], 404);
+            }
+
+            $filePath = Storage::path($expense->receipt_photo);
+            $mimeType = Storage::mimeType($expense->receipt_photo);
+
+            Log::info('API Response: GET /expenses/' . $expenseId . '/receipt', [
+                'expense_id' => $expenseId,
+                'file_path' => $expense->receipt_photo,
+                'mime_type' => $mimeType
+            ]);
+
+            return response()->file($filePath, [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'inline; filename="receipt_' . $expenseId . '.jpg"'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('API Error: GET /expenses/' . $expenseId . '/receipt', [
+                'expense_id' => $expenseId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch receipt photo',
                 'error' => $e->getMessage()
             ], 500);
         }

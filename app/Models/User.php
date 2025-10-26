@@ -183,7 +183,7 @@ class User extends Authenticatable
     public function getMaxReminders(): ?int
     {
         $limits = [
-            'free' => 5,
+            'free' => null, // unlimited - users can delete reminders
             'pro' => null, // unlimited
             'premium' => null, // unlimited
         ];
@@ -195,7 +195,7 @@ class User extends Authenticatable
             return $limits[$planType];
         }
         
-        return 5; // default for unknown plans
+        return null; // default unlimited for unknown plans
     }
 
     /**
@@ -250,7 +250,7 @@ class User extends Authenticatable
         $features = [
             'free' => [
                 'vehicles_limit' => 1,
-                'reminders_limit' => 5,
+                'reminders_limit' => null, // unlimited - users can delete reminders
                 'basic_reminders',
                 'basic_manual',
                 'basic_advice',
