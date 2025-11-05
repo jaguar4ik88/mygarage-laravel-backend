@@ -397,7 +397,7 @@
                                 <strong>App Store</strong>
                             </div>
                         </a>
-                        <a href="#" class="btn btn-light btn-lg btn-download btn-google-play">
+                        <a href="https://play.google.com/store/apps/details?id=uno.mygarage.app" target="_blank" rel="noopener" class="btn btn-light btn-lg btn-download btn-google-play">
                             <i class="bi bi-google-play"></i>
                             <div class="d-flex flex-column align-items-start">
                                 <small>GET IT ON</small>

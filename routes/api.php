@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\AdviceController;
 use App\Http\Controllers\Api\CarDataController;
 use App\Http\Controllers\Api\ExpenseTypeController;
 use App\Http\Controllers\Api\PrivacyPolicyController;
+use App\Http\Controllers\Api\TermsOfServiceController;
 use App\Http\Controllers\Api\CarRecommendationController;
 use App\Http\Controllers\Api\CarTyreController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -150,6 +151,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Public privacy policy routes
 Route::get('/privacy-policy/{language}', [PrivacyPolicyController::class, 'show']);
+
+// Public terms of service routes
+Route::get('/terms-of-service/{language}', [TermsOfServiceController::class, 'show']);
 
 // Admin privacy policy routes (protected)
 Route::middleware('api.key')->group(function () {
