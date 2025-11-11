@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminCarRecommendationController;
 use App\Http\Controllers\Admin\AdminCarTyreController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\PrivacyPolicyPublicController;
+use App\Http\Controllers\TermsOfServicePublicController;
 
 // Главная страница
 Route::get('/', function () {
@@ -31,6 +32,11 @@ Route::get('/', function () {
 Route::get('/privacy-policy/{locale}', [PrivacyPolicyPublicController::class, 'show'])
     ->where('locale', '[a-zA-Z_-]+')
     ->name('privacy-policy.show');
+
+// Публичная страница условий использования
+Route::get('/terms-of-service/{locale}', [TermsOfServicePublicController::class, 'show'])
+    ->where('locale', '[a-zA-Z_-]+')
+    ->name('terms-of-service.show');
 
 // Админка - аутентификация
 Route::prefix('admin')->name('admin.')->group(function () {
