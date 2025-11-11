@@ -52,4 +52,24 @@ class ProfileController extends Controller
             'data' => $user
         ]);
     }
+
+    /**
+     * Delete user account and all associated data
+     * Required by Apple App Store Guideline 5.1.1(v)
+     */
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        // Delete all user tokens to logout from all devices
+        $user->tokens()->delete();
+
+        // Delete user account (cascade deletion will handle related data via User model boot method)
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account deleted successfully'
+        ]);
+    }
 }
