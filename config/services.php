@@ -40,4 +40,8 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
     ],
 
+    'apple' => [
+        'shared_secret' => env('APPLE_SHARED_SECRET'),
+    ],
+
 ];

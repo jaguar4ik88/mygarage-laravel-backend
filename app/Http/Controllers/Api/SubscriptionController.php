@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
+use App\Services\AppleReceiptValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SubscriptionController extends Controller
@@ -90,8 +92,122 @@ class SubscriptionController extends Controller
             ], 404);
         }
 
-        // В реальном приложении здесь должна быть верификация чека с Apple/Google
-        // Для простоты пропускаем верификацию и сразу активируем подписку
+        // Initialize expiration date (will be set from receipt validation or default)
+        $expiresAt = null;
+
+        // Validate receipt for iOS (required by Apple App Store Review)
+        // Apple requires server-side receipt validation for production apps
+        if ($data['platform'] === 'ios') {
+            // In production, receipt_data is mandatory for iOS
+            if (empty($data['receipt_data']) && config('app.env') === 'production') {
+                Log::error('iOS subscription verification without receipt data in production', [
+                    'user_id' => $user->id,
+                    'subscription_type' => $data['subscription_type'],
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Receipt data is required for iOS subscriptions in production',
+                    'error' => 'Missing receipt data',
+                ], 400);
+            }
+
+            // Validate receipt if provided
+            if (!empty($data['receipt_data'])) {
+                try {
+                    $validator = new AppleReceiptValidator();
+                    
+                    // Determine product ID based on subscription type
+                    $productId = match($data['subscription_type']) {
+                        'pro' => 'pro_garage_monthly_subscription',
+                        'premium' => 'premium_garage_monthly_subscription',
+                        default => null,
+                    };
+
+                    if (!$productId) {
+                        Log::warning('Unknown subscription type for receipt validation', [
+                            'subscription_type' => $data['subscription_type'],
+                        ]);
+                    } else {
+                        // Validate receipt according to Apple guidelines
+                        // First tries production, then sandbox if needed
+                        $validationResult = $validator->validate($data['receipt_data']);
+
+                        if (!$validationResult || !$validator->isValid($validationResult)) {
+                            Log::error('Apple receipt validation failed', [
+                                'user_id' => $user->id,
+                                'subscription_type' => $data['subscription_type'],
+                                'validation_status' => $validationResult['status'] ?? 'unknown',
+                            ]);
+
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Receipt validation failed',
+                                'error' => 'Invalid receipt',
+                            ], 400);
+                        }
+
+                        // Extract subscription info from receipt
+                        $subscriptionInfo = $validator->extractSubscriptionInfo($validationResult, $productId);
+
+                        if ($subscriptionInfo) {
+                            // Use transaction IDs from receipt if available
+                            if (!empty($subscriptionInfo['transaction_id'])) {
+                                $data['transaction_id'] = $subscriptionInfo['transaction_id'];
+                            }
+                            if (!empty($subscriptionInfo['original_transaction_id'])) {
+                                $data['original_transaction_id'] = $subscriptionInfo['original_transaction_id'];
+                            }
+
+                            // Calculate expiration date from receipt
+                            if (!empty($subscriptionInfo['expires_date_ms'])) {
+                                $expiresAt = \Carbon\Carbon::createFromTimestampMs($subscriptionInfo['expires_date_ms']);
+                            } else {
+                                $expiresAt = $subscription->duration_days > 0 
+                                    ? now()->addDays($subscription->duration_days) 
+                                    : null;
+                            }
+
+                            Log::info('Apple receipt validated successfully', [
+                                'user_id' => $user->id,
+                                'product_id' => $productId,
+                                'transaction_id' => $data['transaction_id'],
+                                'expires_at' => $expiresAt?->toIso8601String(),
+                            ]);
+                        } else {
+                            Log::warning('Could not extract subscription info from receipt', [
+                                'user_id' => $user->id,
+                                'product_id' => $productId,
+                            ]);
+                            // Fallback to default expiration
+                            $expiresAt = $subscription->duration_days > 0 
+                                ? now()->addDays($subscription->duration_days) 
+                                : null;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Apple receipt validation exception', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+
+                    // In production, we should fail on validation errors
+                    if (config('app.env') === 'production') {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Receipt validation error',
+                            'error' => 'Failed to validate receipt',
+                        ], 400);
+                    }
+                }
+            }
+        }
+
+        // Set expiration date (from receipt validation or default)
+        $expiresAt = $expiresAt ?? ($subscription->duration_days > 0 
+            ? now()->addDays($subscription->duration_days) 
+            : null);
 
         // Деактивируем все предыдущие подписки пользователя
         UserSubscription::where('user_id', $user->id)
@@ -103,7 +219,7 @@ class SubscriptionController extends Controller
             'user_id' => $user->id,
             'subscription_id' => $subscription->id,
             'starts_at' => now(),
-            'expires_at' => $subscription->duration_days > 0 ? now()->addDays($subscription->duration_days) : null,
+            'expires_at' => $expiresAt,
             'is_active' => true,
             'platform' => $data['platform'],
             'transaction_id' => $data['transaction_id'],
