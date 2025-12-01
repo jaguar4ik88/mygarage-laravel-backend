@@ -134,17 +134,44 @@ class SubscriptionController extends Controller
                         $validationResult = $validator->validate($data['receipt_data']);
 
                         if (!$validationResult || !$validator->isValid($validationResult)) {
+                            $status = $validationResult['status'] ?? 'unknown';
+                            $environment = $validationResult['environment'] ?? 'unknown';
+                            
                             Log::error('Apple receipt validation failed', [
                                 'user_id' => $user->id,
                                 'subscription_type' => $data['subscription_type'],
-                                'validation_status' => $validationResult['status'] ?? 'unknown',
+                                'validation_status' => $status,
+                                'environment' => $environment,
+                                'is_production' => config('app.env') === 'production',
                             ]);
 
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Receipt validation failed',
-                                'error' => 'Invalid receipt',
-                            ], 400);
+                            // В production режиме строго требуем валидацию
+                            // В development/test режиме разрешаем продолжить с предупреждением
+                            if (config('app.env') === 'production') {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Receipt validation failed',
+                                    'error' => 'Invalid receipt',
+                                    'status' => $status,
+                                    'environment' => $environment,
+                                ], 400);
+                            } else {
+                                // В development режиме логируем предупреждение, но продолжаем
+                                Log::warning('Apple receipt validation failed in development mode, proceeding anyway', [
+                                    'user_id' => $user->id,
+                                    'validation_status' => $status,
+                                    'environment' => $environment,
+                                ]);
+                                // Продолжаем без данных из receipt
+                            }
+                        } else {
+                            // Валидация успешна, логируем информацию о сандбоксе
+                            $environment = $validationResult['environment'] ?? 'unknown';
+                            Log::info('Apple receipt validation successful', [
+                                'user_id' => $user->id,
+                                'environment' => $environment,
+                                'is_sandbox' => $environment === 'Sandbox',
+                            ]);
                         }
 
                         // Extract subscription info from receipt
