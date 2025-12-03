@@ -15,6 +15,10 @@ class AppleReceiptValidator
      * 1. Always validate against production first
      * 2. If error code 21007 (Sandbox receipt used in production), validate against sandbox
      *
+     * This method follows Apple's recommended approach:
+     * - Production server should first check production App Store
+     * - If status 21007 is returned, retry the request in the sandbox environment
+     *
      * @param string $receiptData Base64 encoded receipt data
      * @param string|null $sharedSecret App Store Shared Secret (optional for auto-renewable subscriptions)
      * @return array|null Validation result or null on failure
@@ -23,17 +27,49 @@ class AppleReceiptValidator
     {
         $sharedSecret = $sharedSecret ?? config('services.apple.shared_secret');
 
-        // Step 1: Try production first (as per Apple guidelines)
+        // Step 1: Always try production first (as per Apple guidelines)
+        Log::info('Apple receipt validation: Starting validation against production environment');
         $productionResult = $this->validateAgainstProduction($receiptData, $sharedSecret);
 
-        // If we get error code 21007, it means sandbox receipt was used in production
-        // In this case, validate against sandbox
-        if (isset($productionResult['status']) && $productionResult['status'] === 21007) {
-            Log::info('Apple receipt validation: Sandbox receipt detected, validating against sandbox');
-            return $this->validateAgainstSandbox($receiptData, $sharedSecret);
+        // Check if we got a response
+        if ($productionResult === null) {
+            Log::error('Apple receipt validation: Production validation request failed');
+            return null;
+        }
+
+        $productionStatus = $productionResult['status'] ?? null;
+
+        // Step 2: If we get error code 21007, it means sandbox receipt was used in production
+        // In this case, validate against sandbox (as per Apple guidelines)
+        if ($productionStatus === 21007) {
+            Log::info('Apple receipt validation: Received status 21007 (Sandbox receipt used in production), retrying in sandbox environment');
+            $sandboxResult = $this->validateAgainstSandbox($receiptData, $sharedSecret);
+
+            if ($sandboxResult === null) {
+                Log::error('Apple receipt validation: Sandbox validation request failed');
+                return null;
+            }
+
+            // Log the result
+            $sandboxStatus = $sandboxResult['status'] ?? null;
+            $sandboxEnvironment = $sandboxResult['environment'] ?? 'unknown';
+            
+            Log::info('Apple receipt validation: Sandbox validation completed', [
+                'status' => $sandboxStatus,
+                'environment' => $sandboxEnvironment,
+            ]);
+
+            // Return sandbox result (should have status 0 if valid)
+            return $sandboxResult;
         }
 
         // Return production result (success or other error)
+        $productionEnvironment = $productionResult['environment'] ?? 'unknown';
+        Log::info('Apple receipt validation: Production validation completed', [
+            'status' => $productionStatus,
+            'environment' => $productionEnvironment,
+        ]);
+
         return $productionResult;
     }
 
@@ -102,13 +138,19 @@ class AppleReceiptValidator
 
     /**
      * Extract subscription information from validated receipt
+     * 
+     * This method should only be called with valid receipt (status 0).
+     * Status 21007 should be handled by validate() method before reaching here.
      */
     public function extractSubscriptionInfo(array $validationResult, string $productId): ?array
     {
-        // Check if receipt is valid
+        // Check if receipt is valid (only status 0 is valid)
         $status = $validationResult['status'] ?? null;
-        if ($status !== 0 && $status !== 21007) {
-            Log::warning('Apple receipt validation failed', ['status' => $status]);
+        if ($status !== 0) {
+            Log::warning('Apple receipt validation: Cannot extract subscription info from invalid receipt', [
+                'status' => $status,
+                'environment' => $validationResult['environment'] ?? 'unknown',
+            ]);
             return null;
         }
 
@@ -141,11 +183,32 @@ class AppleReceiptValidator
 
     /**
      * Check if receipt is valid
+     * 
+     * Only status 0 means valid receipt.
+     * Status 21007 means sandbox receipt was sent to production endpoint,
+     * which should trigger sandbox validation in validate() method.
+     * 
+     * @param array $validationResult Validation result from Apple
+     * @return bool True if receipt is valid (status 0)
      */
     public function isValid(array $validationResult): bool
     {
         $status = $validationResult['status'] ?? null;
-        return $status === 0 || $status === 21007; // 0 = valid, 21007 = sandbox receipt in production (also valid)
+        
+        // Only status 0 means valid receipt
+        // Status 21007 should not reach here - it should be handled in validate() method
+        // by retrying in sandbox environment
+        if ($status === 0) {
+            return true;
+        }
+        
+        // Log non-zero statuses for debugging
+        Log::warning('Apple receipt validation: Invalid receipt status', [
+            'status' => $status,
+            'environment' => $validationResult['environment'] ?? 'unknown',
+        ]);
+        
+        return false;
     }
 }
 

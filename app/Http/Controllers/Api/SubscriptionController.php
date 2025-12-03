@@ -96,7 +96,14 @@ class SubscriptionController extends Controller
         $expiresAt = null;
 
         // Validate receipt for iOS (required by Apple App Store Review)
-        // Apple requires server-side receipt validation for production apps
+        // 
+        // Apple App Store Review Guidelines 2.1 require:
+        // - Server-side receipt validation for production apps
+        // - Production server must first check production App Store
+        // - If status 21007 (Sandbox receipt used in production), retry in sandbox
+        // 
+        // This allows production-signed apps to receive receipts from sandbox during review
+        // See: https://developer.apple.com/documentation/appstorereceipts/verifyreceipt
         if ($data['platform'] === 'ios') {
             // In production, receipt_data is mandatory for iOS
             if (empty($data['receipt_data']) && config('app.env') === 'production') {
@@ -129,15 +136,37 @@ class SubscriptionController extends Controller
                             'subscription_type' => $data['subscription_type'],
                         ]);
                     } else {
-                        // Validate receipt according to Apple guidelines
-                        // First tries production, then sandbox if needed
+                        // Validate receipt according to Apple guidelines:
+                        // 1. First tries production App Store
+                        // 2. If status 21007 (Sandbox receipt used in production), validates against sandbox
+                        Log::info('Starting Apple receipt validation', [
+                            'user_id' => $user->id,
+                            'subscription_type' => $data['subscription_type'],
+                            'product_id' => $productId,
+                        ]);
+
                         $validationResult = $validator->validate($data['receipt_data']);
 
-                        if (!$validationResult || !$validator->isValid($validationResult)) {
+                        if (!$validationResult) {
+                            Log::error('Apple receipt validation: Validation request failed (null result)', [
+                                'user_id' => $user->id,
+                                'subscription_type' => $data['subscription_type'],
+                            ]);
+
+                            if (config('app.env') === 'production') {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Receipt validation failed',
+                                    'error' => 'Failed to validate receipt with App Store',
+                                ], 400);
+                            } else {
+                                Log::warning('Apple receipt validation failed in development mode, proceeding anyway');
+                            }
+                        } elseif (!$validator->isValid($validationResult)) {
                             $status = $validationResult['status'] ?? 'unknown';
                             $environment = $validationResult['environment'] ?? 'unknown';
                             
-                            Log::error('Apple receipt validation failed', [
+                            Log::error('Apple receipt validation: Receipt is invalid', [
                                 'user_id' => $user->id,
                                 'subscription_type' => $data['subscription_type'],
                                 'validation_status' => $status,
@@ -146,7 +175,6 @@ class SubscriptionController extends Controller
                             ]);
 
                             // В production режиме строго требуем валидацию
-                            // В development/test режиме разрешаем продолжить с предупреждением
                             if (config('app.env') === 'production') {
                                 return response()->json([
                                     'success' => false,
@@ -165,11 +193,15 @@ class SubscriptionController extends Controller
                                 // Продолжаем без данных из receipt
                             }
                         } else {
-                            // Валидация успешна, логируем информацию о сандбоксе
+                            // Валидация успешна (status 0)
                             $environment = $validationResult['environment'] ?? 'unknown';
-                            Log::info('Apple receipt validation successful', [
+                            $status = $validationResult['status'] ?? 'unknown';
+                            
+                            Log::info('Apple receipt validation: Receipt is valid', [
                                 'user_id' => $user->id,
+                                'subscription_type' => $data['subscription_type'],
                                 'environment' => $environment,
+                                'status' => $status,
                                 'is_sandbox' => $environment === 'Sandbox',
                             ]);
                         }
