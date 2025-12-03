@@ -119,6 +119,14 @@ class SubscriptionController extends Controller
                 ], 400);
             }
 
+            // Log receipt data status
+            Log::info('Receipt data status', [
+                'user_id' => $user->id,
+                'has_receipt_data' => !empty($data['receipt_data']),
+                'receipt_data_length' => $data['receipt_data'] ? strlen($data['receipt_data']) : 0,
+                'is_production' => config('app.env') === 'production',
+            ]);
+
             // Validate receipt if provided
             if (!empty($data['receipt_data'])) {
                 try {
@@ -268,6 +276,14 @@ class SubscriptionController extends Controller
             ? now()->addDays($subscription->duration_days) 
             : null);
 
+        Log::info('Creating subscription for user', [
+            'user_id' => $user->id,
+            'subscription_type' => $data['subscription_type'],
+            'expires_at' => $expiresAt?->toIso8601String(),
+            'transaction_id' => $data['transaction_id'],
+            'has_receipt_data' => !empty($data['receipt_data']),
+        ]);
+
         // Деактивируем все предыдущие подписки пользователя
         UserSubscription::where('user_id', $user->id)
             ->where('is_active', true)
@@ -286,12 +302,33 @@ class SubscriptionController extends Controller
             'receipt_data' => $data['receipt_data'] ?? null,
         ]);
 
+        Log::info('UserSubscription created', [
+            'user_subscription_id' => $userSubscription->id,
+            'user_id' => $user->id,
+            'subscription_id' => $subscription->id,
+            'is_active' => $userSubscription->is_active,
+        ]);
+
         // Обновляем поля в таблице users
+        $oldPlanType = $user->plan_type;
+        
         $user->update([
             'plan_type' => $subscription->name,
             'subscription_expires_at' => $userSubscription->expires_at,
             'platform' => $data['platform'],
             'transaction_id' => $data['transaction_id'],
+        ]);
+
+        // Обновляем объект пользователя для проверки
+        $user->refresh();
+
+        Log::info('User subscription status updated', [
+            'user_id' => $user->id,
+            'old_plan_type' => $oldPlanType,
+            'new_plan_type' => $subscription->name,
+            'actual_plan_type_in_db' => $user->plan_type,
+            'subscription_expires_at' => $userSubscription->expires_at?->toIso8601String(),
+            'subscription_id' => $subscription->id,
         ]);
 
         return response()->json([
