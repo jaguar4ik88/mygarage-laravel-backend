@@ -20,15 +20,6 @@ class VehicleDocumentController extends Controller
     {
         $user = $request->user();
 
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
-
         // Проверяем, что автомобиль принадлежит пользователю
         $vehicle = Vehicle::where('id', $vehicleId)
             ->where('user_id', $user->id)
@@ -58,15 +49,6 @@ class VehicleDocumentController extends Controller
     public function store(Request $request, int $vehicleId): JsonResponse
     {
         $user = $request->user();
-
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
 
         // Проверяем, что автомобиль принадлежит пользователю
         $vehicle = Vehicle::where('id', $vehicleId)
@@ -137,15 +119,6 @@ class VehicleDocumentController extends Controller
     {
         $user = $request->user();
 
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
-
         $document = VehicleDocument::where('id', $documentId)
             ->where('user_id', $user->id)
             ->first();
@@ -169,15 +142,6 @@ class VehicleDocumentController extends Controller
     public function update(Request $request, int $documentId): JsonResponse
     {
         $user = $request->user();
-
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
 
         $document = VehicleDocument::where('id', $documentId)
             ->where('user_id', $user->id)
@@ -221,15 +185,6 @@ class VehicleDocumentController extends Controller
     {
         $user = $request->user();
 
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
-
         $document = VehicleDocument::where('id', $documentId)
             ->where('user_id', $user->id)
             ->first();
@@ -255,15 +210,6 @@ class VehicleDocumentController extends Controller
     public function download(Request $request, int $documentId)
     {
         $user = $request->user();
-
-        // Проверяем доступ к PRO функциям
-        if (!$user->isPro()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This feature requires PRO subscription',
-                'upgrade_required' => true,
-            ], 403);
-        }
 
         $document = VehicleDocument::where('id', $documentId)
             ->where('user_id', $user->id)
