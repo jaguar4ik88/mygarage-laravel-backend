@@ -118,16 +118,8 @@ class ExpensesHistoryController extends Controller
             $expenseData['user_id'] = $userId;
 
             // Handle receipt photo upload (PRO feature)
+            // Проверка подписки выполняется на фронтенде в ExpenseModal
             if ($request->hasFile('receipt_photo')) {
-                // Check if user has PRO subscription
-                if (!$user->isPro()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Receipt photos require PRO subscription',
-                        'upgrade_required' => true,
-                    ], 403);
-                }
-
                 $file = $request->file('receipt_photo');
                 $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
                 $filePath = $file->storeAs('receipts/' . $userId, $fileName, 'public');
@@ -204,16 +196,8 @@ class ExpensesHistoryController extends Controller
             $updateData = $request->except(['receipt_photo']);
 
             // Handle receipt photo upload (PRO feature)
+            // Проверка подписки выполняется на фронтенде в ExpenseModal
             if ($request->hasFile('receipt_photo')) {
-                // Check if user has PRO subscription
-                if (!$user->isPro()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Receipt photos require PRO subscription',
-                        'upgrade_required' => true,
-                    ], 403);
-                }
-
                 // Delete old receipt if exists
                 if ($expensesHistory->receipt_photo && Storage::exists($expensesHistory->receipt_photo)) {
                     Storage::delete($expensesHistory->receipt_photo);
