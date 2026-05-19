@@ -80,7 +80,14 @@ class SubscriptionController extends Controller
         }
 
         $user = $request->user();
-        $data = $validator->validated();
+        // Laravel не включает отсутствующие nullable поля в validated() — тогда ключей нет в массиве.
+        $data = array_merge(
+            [
+                'original_transaction_id' => null,
+                'receipt_data' => '',
+            ],
+            $validator->validated()
+        );
 
         // Получаем подписку по типу
         $subscription = Subscription::where('name', $data['subscription_type'])->first();
@@ -123,7 +130,7 @@ class SubscriptionController extends Controller
             Log::info('Receipt data status', [
                 'user_id' => $user->id,
                 'has_receipt_data' => !empty($data['receipt_data']),
-                'receipt_data_length' => $data['receipt_data'] ? strlen($data['receipt_data']) : 0,
+                'receipt_data_length' => !empty($data['receipt_data']) ? strlen((string) $data['receipt_data']) : 0,
                 'is_production' => config('app.env') === 'production',
             ]);
 
