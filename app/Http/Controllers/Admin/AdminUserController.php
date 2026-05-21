@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminUserController extends Controller
 {
@@ -40,8 +42,44 @@ class AdminUserController extends Controller
 
     public function show(User $user)
     {
-        $user->load(['vehicles', 'reminders', 'serviceStations']);
+        $user->load([
+            'vehicles',
+            'reminders',
+            'serviceStations',
+            'subscriptions' => function ($query) {
+                $query->with('subscription')->latest();
+            },
+        ]);
+
         return view('admin.users.show', compact('user'));
+    }
+
+    /**
+     * Сброс подписки пользователя до Free (для тестирования в админке).
+     * Не затрагивает магазин Apple/Google — только серверное состояние.
+     */
+    public function cancelSubscription(Request $request, User $user)
+    {
+        $admin = $request->user('admin');
+
+        UserSubscription::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->update(['is_active' => false, 'cancelled_at' => now()]);
+
+        $user->update([
+            'plan_type' => 'free',
+            'subscription_expires_at' => null,
+            'platform' => null,
+            'transaction_id' => null,
+        ]);
+
+        Log::info('Admin cancelled user subscription for testing', [
+            'target_user_id' => $user->id,
+            'admin_id' => $admin?->id,
+        ]);
+
+        return redirect()->route('admin.users.show', $user)
+            ->with('success', 'Подписка сброшена: пользователь переведён на план Free (только серверное состояние).');
     }
 
     public function create()

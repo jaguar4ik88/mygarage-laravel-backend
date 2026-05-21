@@ -52,6 +52,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         
         // Управление пользователями
+        Route::post('users/{user}/cancel-subscription', [AdminUserController::class, 'cancelSubscription'])
+            ->name('users.cancel-subscription');
         Route::resource('users', AdminUserController::class);
         
         // Управление подписками
