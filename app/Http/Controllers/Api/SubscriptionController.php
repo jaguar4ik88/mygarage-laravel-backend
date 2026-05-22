@@ -467,6 +467,7 @@ class SubscriptionController extends Controller
                     'photo_documents' => $user->isPro(),
                     'receipt_photos' => $user->isPro(),
                     'pdf_export' => $user->isPro(),
+                    'reports' => $user->isPro(),
                     'expense_reminders' => $user->isPro(),
                 ],
             ],
