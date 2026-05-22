@@ -29,7 +29,6 @@ class SubscriptionSeeder extends Seeder
                     'advice',
                     'profile_settings',
                     'model_recommendations',
-                    'expenses_statistics',
                     'expenses_history',
                 ],
                 'is_active' => true,
@@ -50,6 +49,7 @@ class SubscriptionSeeder extends Seeder
                     'photo_documents', // Фото документов для авто
                     'receipt_photos', // Фото чеков для трат
                     'pdf_export', // Экспорт отчетов в PDF
+                    'reports', // Раздел «Отчёты» / аналитика
                     'unlimited_reminders', // Неограниченные напоминания
                     'expense_reminders', // Напоминания о добавлении трат (3 раза в неделю)
                 ],

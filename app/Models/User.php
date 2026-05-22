@@ -255,8 +255,6 @@ class User extends Authenticatable
                 'basic_manual',
                 'basic_advice',
                 'sto_search',
-                'basic_reports',
-                'statistics',
                 'expenses_history',
             ],
             'pro' => [
@@ -266,6 +264,7 @@ class User extends Authenticatable
                 'receipt_photos', // фото чеков
                 'pdf_export', // экспорт в PDF
                 'expense_reminders', // напоминания о тратах
+                'reports', // отчёты и аналитика (раздел Отчёты)
                 'all_free_features',
             ],
             'premium' => [
