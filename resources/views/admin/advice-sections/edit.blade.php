@@ -104,6 +104,8 @@
                         </div>
                     </div>
 
+                    @include('admin.partials.named-locales', ['prefix' => 'title', 'translations' => $adviceSection->titleGroup->translations, 'column' => 'title'])
+
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.advice-sections.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Назад

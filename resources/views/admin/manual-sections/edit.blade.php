@@ -139,6 +139,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('admin.partials.extra-locales', ['fields' => ['title'], 'translations' => $manualSection->translations])
                     
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.manual-sections.index') }}" class="btn btn-secondary">

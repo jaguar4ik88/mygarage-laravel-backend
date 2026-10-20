@@ -106,6 +106,8 @@
                         </div>
                     </div>
 
+                    @include('admin.partials.named-locales', ['prefix' => 'title'])
+
                     <h6 class="mt-4 mb-3">Переводы содержания</h6>
                     
                     <div class="row">
@@ -141,6 +143,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('admin.partials.named-locales', ['prefix' => 'content', 'multiline' => true])
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.advice-items.index') }}" class="btn btn-secondary">

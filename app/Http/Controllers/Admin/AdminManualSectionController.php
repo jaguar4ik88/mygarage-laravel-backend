@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ManualSection;
-use App\Models\ManualSectionTranslation;
+use App\Support\AdminTranslations;
 use Illuminate\Http\Request;
 
 class AdminManualSectionController extends Controller
@@ -49,8 +49,7 @@ class AdminManualSectionController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.title' => 'required|string|max:255',
+            ...AdminTranslations::textRules('title'),
         ]);
 
         $manualSection = ManualSection::create([
@@ -60,13 +59,7 @@ class AdminManualSectionController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        // Создаем переводы
-        foreach ($request->translations as $translation) {
-            $manualSection->translations()->create([
-                'locale' => $translation['locale'],
-                'title' => $translation['title'],
-            ]);
-        }
+        AdminTranslations::persist($manualSection->translations(), $request->translations, ['title']);
 
         return redirect()->route('admin.manual-sections.show', $manualSection)
             ->with('success', 'Секция мануала успешно создана');
@@ -86,8 +79,7 @@ class AdminManualSectionController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.title' => 'required|string|max:255',
+            ...AdminTranslations::textRules('title'),
         ]);
 
         $manualSection->update([
@@ -97,14 +89,7 @@ class AdminManualSectionController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        // Обновляем переводы
-        $manualSection->translations()->delete();
-        foreach ($request->translations as $translation) {
-            $manualSection->translations()->create([
-                'locale' => $translation['locale'],
-                'title' => $translation['title'],
-            ]);
-        }
+        AdminTranslations::persist($manualSection->translations(), $request->translations, ['title']);
 
         return redirect()->route('admin.manual-sections.show', $manualSection)
             ->with('success', 'Секция мануала успешно обновлена');

@@ -111,6 +111,8 @@
                         </div>
                     </div>
 
+                    @include('admin.partials.named-locales', ['prefix' => 'title', 'translations' => $adviceItem->titleGroup->translations, 'column' => 'title'])
+
                     <h6 class="mt-4 mb-3">Переводы содержания</h6>
                     
                     <div class="row">
@@ -146,6 +148,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('admin.partials.named-locales', ['prefix' => 'content', 'multiline' => true, 'translations' => $adviceItem->contentGroup->translations, 'column' => 'content'])
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.advice-items.index') }}" class="btn btn-secondary">

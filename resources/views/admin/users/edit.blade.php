@@ -84,6 +84,9 @@
                                     <option value="UAH" {{ old('currency', $user->currency) === 'UAH' ? 'selected' : '' }}>UAH</option>
                                     <option value="USD" {{ old('currency', $user->currency) === 'USD' ? 'selected' : '' }}>USD</option>
                                     <option value="EUR" {{ old('currency', $user->currency) === 'EUR' ? 'selected' : '' }}>EUR</option>
+                                    <option value="GBP" {{ old('currency', $user->currency) === 'GBP' ? 'selected' : '' }}>GBP</option>
+                                    <option value="PLN" {{ old('currency', $user->currency) === 'PLN' ? 'selected' : '' }}>PLN</option>
+                                    <option value="RON" {{ old('currency', $user->currency) === 'RON' ? 'selected' : '' }}>RON</option>
                                 </select>
                                 @error('currency')
                                     <div class="invalid-feedback">{{ $message }}</div>

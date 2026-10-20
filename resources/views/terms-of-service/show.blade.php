@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ $locale }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Terms of Service - {{ strtoupper($locale) }}</title>
+    <title>{{ $pageTitle }} - {{ strtoupper($locale) }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <style>
@@ -20,7 +20,7 @@
     </head>
 <body>
     <div class="container">
-        <h1>Terms of Service</h1>
+        <h1>{{ $pageTitle }}</h1>
         <div class="locale">Locale: <strong>{{ strtoupper($locale) }}</strong></div>
 
         @foreach($sections as $section)

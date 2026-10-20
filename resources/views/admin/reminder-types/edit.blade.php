@@ -154,6 +154,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('admin.partials.extra-locales', ['fields' => ['title'], 'translations' => $reminderType->translations])
                     
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.reminder-types.index') }}" class="btn btn-secondary">

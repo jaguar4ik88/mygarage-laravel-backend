@@ -438,7 +438,21 @@
             <hr class="my-4" style="border-color: var(--border-color);">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p style="color: var(--text-secondary);" class="mb-0">&copy; 2024 MyGarage. Усі права захищені.</p>
+                    <p style="color: var(--text-secondary);" class="mb-2">&copy; 2024 MyGarage. Усі права захищені.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="https://mygarage.uno/privacy-policy/uk" style="color: var(--text-secondary); text-decoration: none;">Політика конфіденційності (UK)</a>
+                        <a href="https://mygarage.uno/privacy-policy/ru" style="color: var(--text-secondary); text-decoration: none;">Политика конфиденциальности (RU)</a>
+                        <a href="https://mygarage.uno/privacy-policy/en" style="color: var(--text-secondary); text-decoration: none;">Privacy Policy (EN)</a>
+                        <a href="https://mygarage.uno/privacy-policy/pl" style="color: var(--text-secondary); text-decoration: none;">Polityka prywatności (PL)</a>
+                        <a href="https://mygarage.uno/privacy-policy/pt" style="color: var(--text-secondary); text-decoration: none;">Política de privacidade (PT)</a>
+                        <a href="https://mygarage.uno/privacy-policy/ro" style="color: var(--text-secondary); text-decoration: none;">Politica de confidențialitate (RO)</a>
+                        <a href="https://mygarage.uno/terms-of-service/uk" style="color: var(--text-secondary); text-decoration: none;">Умови використання (UK)</a>
+                        <a href="https://mygarage.uno/terms-of-service/ru" style="color: var(--text-secondary); text-decoration: none;">Условия использования (RU)</a>
+                        <a href="https://mygarage.uno/terms-of-service/en" style="color: var(--text-secondary); text-decoration: none;">Terms of Service (EN)</a>
+                        <a href="https://mygarage.uno/terms-of-service/pl" style="color: var(--text-secondary); text-decoration: none;">Regulamin (PL)</a>
+                        <a href="https://mygarage.uno/terms-of-service/pt" style="color: var(--text-secondary); text-decoration: none;">Termos de utilização (PT)</a>
+                        <a href="https://mygarage.uno/terms-of-service/ro" style="color: var(--text-secondary); text-decoration: none;">Termeni de utilizare (RO)</a>
+                    </div>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p style="color: var(--text-secondary);" class="mb-0">Зроблено з ❤️ для автолюбителів</p>

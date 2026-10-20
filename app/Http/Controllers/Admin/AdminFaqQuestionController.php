@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FaqQuestion;
 use App\Models\FaqCategory;
+use App\Support\AdminTranslations;
 use Illuminate\Http\Request;
 
 class AdminFaqQuestionController extends Controller
@@ -53,9 +54,8 @@ class AdminFaqQuestionController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.question' => 'required|string|max:500',
-            'translations.*.answer' => 'required|string',
+            ...AdminTranslations::textRules('question', 500),
+            ...AdminTranslations::textRules('answer', null),
         ]);
 
         $question = FaqQuestion::create([
@@ -65,13 +65,7 @@ class AdminFaqQuestionController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        foreach ($request->translations as $translation) {
-            $question->translations()->create([
-                'locale' => $translation['locale'],
-                'question' => $translation['question'],
-                'answer' => $translation['answer'],
-            ]);
-        }
+        AdminTranslations::persist($question->translations(), $request->translations, ['question', 'answer']);
 
         return redirect()->route('admin.faq.questions.show', $question)
             ->with('success', 'Вопрос FAQ успешно создан');
@@ -92,9 +86,8 @@ class AdminFaqQuestionController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.question' => 'required|string|max:500',
-            'translations.*.answer' => 'required|string',
+            ...AdminTranslations::textRules('question', 500),
+            ...AdminTranslations::textRules('answer', null),
         ]);
 
         $question->update([
@@ -104,14 +97,7 @@ class AdminFaqQuestionController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        $question->translations()->delete();
-        foreach ($request->translations as $translation) {
-            $question->translations()->create([
-                'locale' => $translation['locale'],
-                'question' => $translation['question'],
-                'answer' => $translation['answer'],
-            ]);
-        }
+        AdminTranslations::persist($question->translations(), $request->translations, ['question', 'answer']);
 
         return redirect()->route('admin.faq.questions.show', $question)
             ->with('success', 'Вопрос FAQ успешно обновлен');

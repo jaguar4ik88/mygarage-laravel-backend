@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReminderType;
-use App\Models\ReminderTypeTranslation;
+use App\Support\AdminTranslations;
 use Illuminate\Http\Request;
 
 class AdminReminderTypeController extends Controller
@@ -50,8 +50,7 @@ class AdminReminderTypeController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.title' => 'required|string|max:255',
+            ...AdminTranslations::textRules('title'),
         ]);
 
         $reminderType = ReminderType::create([
@@ -62,13 +61,7 @@ class AdminReminderTypeController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        // Создаем переводы
-        foreach ($request->translations as $translation) {
-            $reminderType->translations()->create([
-                'locale' => $translation['locale'],
-                'title' => $translation['title'],
-            ]);
-        }
+        AdminTranslations::persist($reminderType->translations(), $request->translations, ['title']);
 
         return redirect()->route('admin.reminder-types.show', $reminderType)
             ->with('success', 'Тип напоминания успешно создан');
@@ -89,8 +82,7 @@ class AdminReminderTypeController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.title' => 'required|string|max:255',
+            ...AdminTranslations::textRules('title'),
         ]);
 
         $reminderType->update([
@@ -101,14 +93,7 @@ class AdminReminderTypeController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        // Обновляем переводы
-        $reminderType->translations()->delete();
-        foreach ($request->translations as $translation) {
-            $reminderType->translations()->create([
-                'locale' => $translation['locale'],
-                'title' => $translation['title'],
-            ]);
-        }
+        AdminTranslations::persist($reminderType->translations(), $request->translations, ['title']);
 
         return redirect()->route('admin.reminder-types.show', $reminderType)
             ->with('success', 'Тип напоминания успешно обновлен');

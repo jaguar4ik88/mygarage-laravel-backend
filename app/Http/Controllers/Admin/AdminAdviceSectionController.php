@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AdviceSection;
 use App\Models\TranslationGroup;
-use App\Models\Translation;
 use Illuminate\Http\Request;
 
 class AdminAdviceSectionController extends Controller
@@ -33,27 +32,20 @@ class AdminAdviceSectionController extends Controller
             'title_en' => 'required|string|max:255',
             'title_ru' => 'required|string|max:255',
             'title_uk' => 'required|string|max:255',
+            'title_pl' => 'nullable|string|max:255',
+            'title_pt' => 'nullable|string|max:255',
+            'title_ro' => 'nullable|string|max:255',
         ]);
 
         // Create title translation group
         $titleGroup = TranslationGroup::create();
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'en',
-            'title' => $request->title_en,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'ru',
-            'title' => $request->title_ru,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'uk',
-            'title' => $request->title_uk,
+        $titleGroup->syncColumn('title', [
+            'en' => $request->title_en,
+            'ru' => $request->title_ru,
+            'uk' => $request->title_uk,
+            'pl' => $request->title_pl,
+            'pt' => $request->title_pt,
+            'ro' => $request->title_ro,
         ]);
 
         AdviceSection::create([
@@ -89,14 +81,20 @@ class AdminAdviceSectionController extends Controller
             'title_en' => 'required|string|max:255',
             'title_ru' => 'required|string|max:255',
             'title_uk' => 'required|string|max:255',
+            'title_pl' => 'nullable|string|max:255',
+            'title_pt' => 'nullable|string|max:255',
+            'title_ro' => 'nullable|string|max:255',
         ]);
 
         // Update translations
-        $titleGroup = $adviceSection->titleGroup;
-        
-        $titleGroup->translations()->where('locale', 'en')->update(['title' => $request->title_en]);
-        $titleGroup->translations()->where('locale', 'ru')->update(['title' => $request->title_ru]);
-        $titleGroup->translations()->where('locale', 'uk')->update(['title' => $request->title_uk]);
+        $adviceSection->titleGroup->syncColumn('title', [
+            'en' => $request->title_en,
+            'ru' => $request->title_ru,
+            'uk' => $request->title_uk,
+            'pl' => $request->title_pl,
+            'pt' => $request->title_pt,
+            'ro' => $request->title_ro,
+        ]);
 
         $adviceSection->update([
             'slug' => $request->slug,

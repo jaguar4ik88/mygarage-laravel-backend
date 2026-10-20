@@ -62,6 +62,9 @@
                                             <option value="uk" {{ old('translations.0.locale') === 'uk' ? 'selected' : '' }}>Украинский</option>
                                             <option value="ru" {{ old('translations.0.locale') === 'ru' ? 'selected' : '' }}>Русский</option>
                                             <option value="en" {{ old('translations.0.locale') === 'en' ? 'selected' : '' }}>Английский</option>
+                                            <option value="pl" {{ old('translations.0.locale') === 'pl' ? 'selected' : '' }}>Польский</option>
+                                            <option value="pt" {{ old('translations.0.locale') === 'pt' ? 'selected' : '' }}>Португальский</option>
+                                            <option value="ro" {{ old('translations.0.locale') === 'ro' ? 'selected' : '' }}>Румынский</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
@@ -117,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="uk">Украинский</option>
                         <option value="ru">Русский</option>
                         <option value="en">Английский</option>
+                        <option value="pl">Польский</option>
+                        <option value="pt">Португальский</option>
+                        <option value="ro">Румынский</option>
                     </select>
                 </div>
                 <div class="col-md-6">

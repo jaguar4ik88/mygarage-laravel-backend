@@ -65,6 +65,9 @@
                                                     <option value="uk" {{ $translation->locale === 'uk' ? 'selected' : '' }}>Украинский</option>
                                                     <option value="ru" {{ $translation->locale === 'ru' ? 'selected' : '' }}>Русский</option>
                                                     <option value="en" {{ $translation->locale === 'en' ? 'selected' : '' }}>Английский</option>
+                                                    <option value="pl" {{ $translation->locale === 'pl' ? 'selected' : '' }}>Польский</option>
+                                                    <option value="pt" {{ $translation->locale === 'pt' ? 'selected' : '' }}>Португальский</option>
+                                                    <option value="ro" {{ $translation->locale === 'ro' ? 'selected' : '' }}>Румынский</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -93,6 +96,9 @@
                                                 <option value="uk">Украинский</option>
                                                 <option value="ru">Русский</option>
                                                 <option value="en">Английский</option>
+                                                <option value="pl">Польский</option>
+                                                <option value="pt">Португальский</option>
+                                                <option value="ro">Румынский</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
@@ -145,6 +151,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="uk">Украинский</option>
                         <option value="ru">Русский</option>
                         <option value="en">Английский</option>
+                        <option value="pl">Польский</option>
+                        <option value="pt">Португальский</option>
+                        <option value="ro">Румынский</option>
                     </select>
                 </div>
                 <div class="col-md-6">
