@@ -26,7 +26,7 @@ class ProfileController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $request->user()->id,
             'password' => 'sometimes|required|string|min:8',
-            'currency' => 'sometimes|string|in:UAH,USD,EUR,GBP',
+            'currency' => 'sometimes|string|in:UAH,USD,EUR,GBP,PLN,RON',
         ]);
 
         if ($validator->fails()) {

@@ -16,7 +16,10 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Za-z]).+$/'],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.regex' => 'Password must contain at least one letter.',
         ]);
 
         if ($validator->fails()) {

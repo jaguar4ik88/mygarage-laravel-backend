@@ -38,6 +38,27 @@ class TranslationGroup extends Model
         
         return $translation ? $translation->title : '';
     }
+
+    /**
+     * Create or update locale rows. An empty value removes that locale.
+     *
+     * @param  array<string, string|null>  $valuesByLocale
+     */
+    public function syncColumn(string $column, array $valuesByLocale): void
+    {
+        foreach ($valuesByLocale as $locale => $value) {
+            $text = trim((string) ($value ?? ''));
+            if ($text === '') {
+                $this->translations()->where('locale', $locale)->delete();
+                continue;
+            }
+
+            $this->translations()->updateOrCreate(
+                ['locale' => $locale],
+                [$column => $text]
+            );
+        }
+    }
 }
 
 

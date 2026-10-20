@@ -138,6 +138,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('admin.partials.extra-locales', ['fields' => ['name']])
                     
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.faq.categories.index') }}" class="btn btn-secondary">

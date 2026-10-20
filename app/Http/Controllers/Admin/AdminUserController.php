@@ -93,7 +93,7 @@ class AdminUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'currency' => 'nullable|string|in:UAH,USD,EUR',
+            'currency' => 'nullable|string|in:UAH,USD,EUR,GBP,PLN,RON',
             'is_admin' => 'boolean',
         ]);
 
@@ -120,7 +120,7 @@ class AdminUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'currency' => 'nullable|string|in:UAH,USD,EUR',
+            'currency' => 'nullable|string|in:UAH,USD,EUR,GBP,PLN,RON',
             'is_admin' => 'boolean',
         ]);
 

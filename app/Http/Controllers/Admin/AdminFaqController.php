@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FaqCategory;
 use App\Models\FaqQuestion;
-use App\Models\FaqCategoryTranslation;
-use App\Models\FaqQuestionTranslation;
+use App\Support\AdminTranslations;
 use Illuminate\Http\Request;
 
 class AdminFaqController extends Controller
@@ -50,8 +49,7 @@ class AdminFaqController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.name' => 'required|string|max:255',
+            ...AdminTranslations::textRules('name'),
         ]);
 
         $category = FaqCategory::create([
@@ -61,12 +59,7 @@ class AdminFaqController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        foreach ($request->translations as $translation) {
-            $category->translations()->create([
-                'locale' => $translation['locale'],
-                'name' => $translation['name'],
-            ]);
-        }
+        AdminTranslations::persist($category->translations(), $request->translations, ['name']);
 
         return redirect()->route('admin.faq.categories.show', $category)
             ->with('success', 'Категория FAQ успешно создана');
@@ -86,8 +79,7 @@ class AdminFaqController extends Controller
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'translations' => 'required|array',
-            'translations.*.locale' => 'required|string|max:5',
-            'translations.*.name' => 'required|string|max:255',
+            ...AdminTranslations::textRules('name'),
         ]);
 
         $category->update([
@@ -97,13 +89,7 @@ class AdminFaqController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        $category->translations()->delete();
-        foreach ($request->translations as $translation) {
-            $category->translations()->create([
-                'locale' => $translation['locale'],
-                'name' => $translation['name'],
-            ]);
-        }
+        AdminTranslations::persist($category->translations(), $request->translations, ['name']);
 
         return redirect()->route('admin.faq.categories.show', $category)
             ->with('success', 'Категория FAQ успешно обновлена');

@@ -34,6 +34,15 @@
                                 @case('en')
                                     🇬🇧 English
                                     @break
+                                @case('pl')
+                                    🇵🇱 Polski
+                                    @break
+                                @case('pt')
+                                    🇵🇹 Português
+                                    @break
+                                @case('ro')
+                                    🇷🇴 Română
+                                    @break
                             @endswitch
                             <span class="badge bg-secondary ms-2">{{ count($languagePolicies) }} разделов</span>
                         </h5>

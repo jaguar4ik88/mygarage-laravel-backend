@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\AdviceItem;
 use App\Models\AdviceSection;
 use App\Models\TranslationGroup;
-use App\Models\Translation;
 use Illuminate\Http\Request;
 
 class AdminAdviceItemController extends Controller
@@ -36,51 +35,35 @@ class AdminAdviceItemController extends Controller
             'title_en' => 'required|string|max:255',
             'title_ru' => 'required|string|max:255',
             'title_uk' => 'required|string|max:255',
+            'title_pl' => 'nullable|string|max:255',
+            'title_pt' => 'nullable|string|max:255',
+            'title_ro' => 'nullable|string|max:255',
             'content_en' => 'required|string',
             'content_ru' => 'required|string',
             'content_uk' => 'required|string',
+            'content_pl' => 'nullable|string',
+            'content_pt' => 'nullable|string',
+            'content_ro' => 'nullable|string',
         ]);
 
-        // Create title translation group
         $titleGroup = TranslationGroup::create();
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'en',
-            'title' => $request->title_en,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'ru',
-            'title' => $request->title_ru,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $titleGroup->id,
-            'locale' => 'uk',
-            'title' => $request->title_uk,
+        $titleGroup->syncColumn('title', [
+            'en' => $request->title_en,
+            'ru' => $request->title_ru,
+            'uk' => $request->title_uk,
+            'pl' => $request->title_pl,
+            'pt' => $request->title_pt,
+            'ro' => $request->title_ro,
         ]);
 
-        // Create content translation group
         $contentGroup = TranslationGroup::create();
-        
-        Translation::create([
-            'translation_group_id' => $contentGroup->id,
-            'locale' => 'en',
-            'content' => $request->content_en,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $contentGroup->id,
-            'locale' => 'ru',
-            'content' => $request->content_ru,
-        ]);
-        
-        Translation::create([
-            'translation_group_id' => $contentGroup->id,
-            'locale' => 'uk',
-            'content' => $request->content_uk,
+        $contentGroup->syncColumn('content', [
+            'en' => $request->content_en,
+            'ru' => $request->content_ru,
+            'uk' => $request->content_uk,
+            'pl' => $request->content_pl,
+            'pt' => $request->content_pt,
+            'ro' => $request->content_ro,
         ]);
 
         AdviceItem::create([
@@ -118,22 +101,34 @@ class AdminAdviceItemController extends Controller
             'title_en' => 'required|string|max:255',
             'title_ru' => 'required|string|max:255',
             'title_uk' => 'required|string|max:255',
+            'title_pl' => 'nullable|string|max:255',
+            'title_pt' => 'nullable|string|max:255',
+            'title_ro' => 'nullable|string|max:255',
             'content_en' => 'required|string',
             'content_ru' => 'required|string',
             'content_uk' => 'required|string',
+            'content_pl' => 'nullable|string',
+            'content_pt' => 'nullable|string',
+            'content_ro' => 'nullable|string',
         ]);
 
-        // Update title translations
-        $titleGroup = $adviceItem->titleGroup;
-        $titleGroup->translations()->where('locale', 'en')->update(['title' => $request->title_en]);
-        $titleGroup->translations()->where('locale', 'ru')->update(['title' => $request->title_ru]);
-        $titleGroup->translations()->where('locale', 'uk')->update(['title' => $request->title_uk]);
+        $adviceItem->titleGroup->syncColumn('title', [
+            'en' => $request->title_en,
+            'ru' => $request->title_ru,
+            'uk' => $request->title_uk,
+            'pl' => $request->title_pl,
+            'pt' => $request->title_pt,
+            'ro' => $request->title_ro,
+        ]);
 
-        // Update content translations
-        $contentGroup = $adviceItem->contentGroup;
-        $contentGroup->translations()->where('locale', 'en')->update(['content' => $request->content_en]);
-        $contentGroup->translations()->where('locale', 'ru')->update(['content' => $request->content_ru]);
-        $contentGroup->translations()->where('locale', 'uk')->update(['content' => $request->content_uk]);
+        $adviceItem->contentGroup->syncColumn('content', [
+            'en' => $request->content_en,
+            'ru' => $request->content_ru,
+            'uk' => $request->content_uk,
+            'pl' => $request->content_pl,
+            'pt' => $request->content_pt,
+            'ro' => $request->content_ro,
+        ]);
 
         $adviceItem->update([
             'advice_section_id' => $request->advice_section_id,

@@ -33,6 +33,15 @@
                                     @case('en')
                                         🇬🇧 English
                                         @break
+                                    @case('pl')
+                                        🇵🇱 Polski
+                                        @break
+                                    @case('pt')
+                                        🇵🇹 Português
+                                        @break
+                                    @case('ro')
+                                        🇷🇴 Română
+                                        @break
                                 @endswitch
                                 - {{ $privacyPolicy->title }}
                             </h5>
@@ -77,6 +86,15 @@
                                                 @break
                                             @case('en')
                                                 🇬🇧 English
+                                                @break
+                                            @case('pl')
+                                                🇵🇱 Polski
+                                                @break
+                                            @case('pt')
+                                                🇵🇹 Português
+                                                @break
+                                            @case('ro')
+                                                🇷🇴 Română
                                                 @break
                                         @endswitch
                                     </td>

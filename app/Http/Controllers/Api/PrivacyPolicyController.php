@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PrivacyPolicy;
+use App\Support\LegalDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -15,10 +16,9 @@ class PrivacyPolicyController extends Controller
     public function show(Request $request, string $language): JsonResponse
     {
         $language = strtolower($language);
-        
-        // Validate language
-        if (!in_array($language, ['ru', 'uk', 'en'])) {
-            $language = 'en'; // fallback to English
+
+        if (! LegalDocuments::isSupported($language)) {
+            $language = 'en';
         }
 
         $sections = PrivacyPolicy::forLanguage($language)
@@ -32,6 +32,10 @@ class PrivacyPolicyController extends Controller
                     'content' => $item->content,
                 ];
             });
+
+        if ($sections->isEmpty()) {
+            $sections = collect(LegalDocuments::privacySections($language));
+        }
 
         return response()->json([
             'success' => true,
@@ -61,7 +65,7 @@ class PrivacyPolicyController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'language' => 'required|string|in:ru,uk,en',
+            'language' => LegalDocuments::languageRule(),
             'section' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -90,7 +94,7 @@ class PrivacyPolicyController extends Controller
     public function update(Request $request, PrivacyPolicy $privacyPolicy): JsonResponse
     {
         $request->validate([
-            'language' => 'sometimes|string|in:ru,uk,en',
+            'language' => LegalDocuments::languageRule(false),
             'section' => 'sometimes|string|max:255',
             'title' => 'sometimes|string|max:255',
             'content' => 'sometimes|string',

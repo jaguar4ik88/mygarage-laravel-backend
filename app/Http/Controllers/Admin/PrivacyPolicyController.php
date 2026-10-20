@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PrivacyPolicy;
+use App\Support\LegalDocuments;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -30,10 +31,10 @@ class PrivacyPolicyController extends Controller
      */
     public function create(): View
     {
-        $languages = ['ru' => 'Русский', 'uk' => 'Українська', 'en' => 'English'];
+        $languages = LegalDocuments::languageOptions();
         $sections = [
             'dataCollection' => 'Сбор данных',
-            'dataUsage' => 'Использование данных', 
+            'dataUsage' => 'Использование данных',
             'dataSharing' => 'Передача данных',
             'dataSecurity' => 'Безопасность данных',
             'userRights' => 'Права пользователя',
@@ -50,7 +51,7 @@ class PrivacyPolicyController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'language' => 'required|string|in:ru,uk,en',
+            'language' => LegalDocuments::languageRule(),
             'section' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -84,7 +85,7 @@ class PrivacyPolicyController extends Controller
      */
     public function edit(PrivacyPolicy $privacyPolicy): View
     {
-        $languages = ['ru' => 'Русский', 'uk' => 'Українська', 'en' => 'English'];
+        $languages = LegalDocuments::languageOptions();
         $sections = [
             'dataCollection' => 'Сбор данных',
             'dataUsage' => 'Использование данных',
@@ -104,7 +105,7 @@ class PrivacyPolicyController extends Controller
     public function update(Request $request, PrivacyPolicy $privacyPolicy): RedirectResponse
     {
         $request->validate([
-            'language' => 'required|string|in:ru,uk,en',
+            'language' => LegalDocuments::languageRule(),
             'section' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
